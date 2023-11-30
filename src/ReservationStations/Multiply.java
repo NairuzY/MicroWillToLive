@@ -11,4 +11,9 @@ public class Multiply implements ReservationStation {
     public Multiply() {
         super();
     }
+    
+    @Override
+    public void execute() {
+    
+    }
 }

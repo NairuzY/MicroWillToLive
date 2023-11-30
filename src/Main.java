@@ -1,8 +1,13 @@
-import java.io.StreamReader;
+import ReservationStations.*;
+
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) {
+    int cycle = 0;
+    
+    public static void main(String[] args) throws IOException {
 
         File file = new File("program.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -21,17 +26,25 @@ public class Main {
         System.out.println("Enter the number of cycles for store instructions:");
         int storeLatency = sc.nextInt();
         System.out.println("Enter the size of the add/sub reservation station:");
-        int AddReservationStations = sc.nextInt();
+        int addReservationStations = sc.nextInt();
         System.out.println("Enter the size of the multiply/divide reservation station:");
-        int MultReservationStations = sc.nextInt();
+        int multReservationStations = sc.nextInt();
         System.out.println("Enter the size of the load buffer:");
-        int LoadBuffer = sc.nextInt();
+        int loadBuffer = sc.nextInt();
         System.out.println("Enter the size of the store buffer:");
-        int StoreBuffer = sc.nextInt();
+        int storeBuffer = sc.nextInt();
+        
+        // Reservation stations
+        Add[] addReservationStation = new Add[addReservationStations];
+        Multiply[] multReservationStation = new Multiply[multReservationStations];
+        Load[] loadReservationStation = new Load[loadBuffer];
+        Store[] storeReservationStation = new Store[storeBuffer];
+        
         while ((instruction = br.readLine()) != null) {
-            
+        
         }
-
     }
+    
+    
 
 }

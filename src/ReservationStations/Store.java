@@ -5,8 +5,12 @@ public class Store implements ReservationStation {
     int Vj;
     int Qj;
     
-    public Add() {
+    public Store() {
         super();
     }
-
+    
+    @Override
+    public void execute() {
+    
+    }
 }
