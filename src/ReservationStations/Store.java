@@ -6,7 +6,7 @@ import utils.Status;
 
 public class Store extends ReservationStation {
 
-    float Vj;
+    public Float Vj;
     public String Qj;
     public Integer address;
 
@@ -36,5 +36,15 @@ public class Store extends ReservationStation {
     @Override
     public void execute() {
         ((Instructions.Store)  this.instruction).execute();
+    }
+
+    public void empty() {
+        this.Vj=null;
+        this.Qj=null;
+        this.address = null;
+        this.instruction = null;
+        this.busy = false;
+        this.result = null;
+        this.remainingExecutionCycles = -1;
     }
 }

@@ -53,6 +53,17 @@ this.busy=true;
 
 }
 
+    public void empty() {
+        this.Vj = null;
+        this.Vk = null;
+        this.Qj = null;
+        this.Qk = null;
+        this.instruction = null;
+        this.busy = false;
+        this.result = null;
+        this.remainingExecutionCycles = -1;
+    }
+
     public void setVj(Float Vj) {
         this.Vj = Vj;
     }

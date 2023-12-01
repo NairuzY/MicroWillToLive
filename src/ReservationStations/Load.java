@@ -33,7 +33,15 @@ public class Load extends ReservationStation {
     @Override
     public void execute() {
 
-        result=     ((Instructions.Load)  this.instruction).execute();
+        result = ((Instructions.Load)  this.instruction).execute();
+    }
+
+    public void empty() {
+        this.effectiveAddress = null;
+        this.instruction = null;
+        this.busy = false;
+        this.result = null;
+        this.remainingExecutionCycles = -1;
     }
   
 }

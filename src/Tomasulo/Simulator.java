@@ -222,14 +222,133 @@ public class Simulator {
 
     }
 
-    public static void write() {
-        // check if there is an instruction in any of the reservation stations with
-        // remaining time = 0
-        // if there is an instruction, write it to everything waiting for it
-        // if there is no instruction, do nothing
+    private static String findHighestPriorityKey(HashMap<String, Integer> priority) {
+        int maxPriority = Integer.MIN_VALUE;
+        String highestPriorityKey = null;
     
+        // Iterate through the entries of the HashMap to find the key with the highest value
+        for (Map.Entry<String, Integer> entry : priority.entrySet()) {
+            if (entry.getValue() > maxPriority) {
+                maxPriority = entry.getValue();
+                highestPriorityKey = entry.getKey();
+            }
+        }
+    
+        return highestPriorityKey;
+    }
 
+    public ReservationStation findReservationStation(String tag) {
+        if(tag.charAt(0)=='A'){
+            return addReservationStation[Integer.parseInt(tag.substring(1))-1];
+        }
+        else if(tag.charAt(0)=='M'){
+            return multReservationStation[Integer.parseInt(tag.substring(1))-1];
+        }
+        else if(tag.charAt(0)=='L'){
+            return loadReservationStation[Integer.parseInt(tag.substring(1))-1];
+        }
+        else if(tag.charAt(0)=='S'){
+            return storeReservationStation[Integer.parseInt(tag.substring(1))-1];
+        }
+        else{
+            return null;
+        }
+    }
 
+    public static void highestWritingPriority() {
+        HashMap<String, Integer> priority = new HashMap<String, Integer>();
+        for(int i=0; i<addReservationStations; i++){
+            if(addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
+                priority.put(addReservationStation[i].tag, 0);
+        }
+        for(int i=0; i<multReservationStations; i++){
+            if(multReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
+                priority.put(multReservationStation[i].tag, 0);
+        }
+        for(int i=0; i<loadBuffer; i++){
+            if(loadReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
+                priority.put(loadReservationStation[i].tag, 0);
+        }
+        if(priority.isEmpty())
+            return;
+        for(int i=0; i<RegisterFile.registerFile.length; i++){
+            if(RegisterFile.registerFile[i].tag != null){
+                if(priority.containsKey(RegisterFile.registerFile[i].tag))
+                    priority.put(RegisterFile.registerFile[i].tag, priority.get(RegisterFile.registerFile[i].tag)+1);
+            }
+        }
+        for(int i=0; i<addReservationStations; i++){
+            if(addReservationStation[i].busy == true){
+                if(addReservationStation[i].getQj() != null){
+                    if(priority.containsKey(addReservationStation[i].getQj()))
+                        priority.put(addReservationStation[i].getQj(), priority.get(addReservationStation[i].getQj())+1);
+                }
+                if(addReservationStation[i].getQk() != null){
+                    if(priority.containsKey(addReservationStation[i].getQk()))
+                        priority.put(addReservationStation[i].getQk(), priority.get(addReservationStation[i].getQk())+1);
+                }
+            }
+        }
+        for(int i=0; i<multReservationStations; i++){
+            if(multReservationStation[i].busy == true){
+                if(multReservationStation[i].getQj() != null){
+                    if(priority.containsKey(multReservationStation[i].getQj()))
+                        priority.put(multReservationStation[i].getQj(), priority.get(multReservationStation[i].getQj())+1);
+                }
+                if(multReservationStation[i].getQk() != null){
+                    if(priority.containsKey(multReservationStation[i].getQk()))
+                        priority.put(multReservationStation[i].getQk(), priority.get(multReservationStation[i].getQk())+1);
+                }
+            }
+        }
+        for(int i=0; i<storeBuffer; i++){
+            if(storeReservationStation[i].busy == true){
+                if(storeReservationStation[i].getQj() != null){
+                    if(priority.containsKey(storeReservationStation[i].getQj()))
+                        priority.put(storeReservationStation[i].getQj(), priority.get(storeReservationStation[i].getQj())+1);
+                }
+            }
+        }
+
+        String highestPriorityStation = findHighestPriorityKey(priority);
+        ReservationStation station = findReservationStation(highestPriorityStation);
+
+    }
+
+    public static void write(RevervationStation station){
+        for(int i=0; i < RegisterFile.registerFile.length; i++){
+            if(RegisterFile.registerFile[i].tag == station.tag){
+                RegisterFile.registerFile[i].tag = null;
+                RegisterFile.registerFile[i].value = station.result;
+            }
+        }
+        for(int i=0; i < addReservationStations; i++){
+            if(addReservationStation[i].getQj() == station.tag){
+                addReservationStation[i].setQj(null);
+                addReservationStation[i].setVj(station.result);
+            }
+            if(addReservationStation[i].getQk() == station.tag){
+                addReservationStation[i].setQk(null);
+                addReservationStation[i].setVk(station.result);
+            }
+        }
+        for(int i=0; i < multReservationStations; i++){
+            if(multReservationStation[i].getQj() == station.tag){
+                multReservationStation[i].setQj(null);
+                multReservationStation[i].setVj(station.result);
+            }
+            if(multReservationStation[i].getQk() == station.tag){
+                multReservationStation[i].setQk(null);
+                multReservationStation[i].setVk(station.result);
+            }
+        }
+        for(int i=0; i < storeBuffer; i++){
+            if(storeReservationStation[i].getQj() == station.tag){
+                storeReservationStation[i].setQj(null);
+                storeReservationStation[i].setVj(station.result);
+            }
+        }
+        
     }
 
     public static void start() {

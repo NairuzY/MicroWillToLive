@@ -8,8 +8,8 @@ import utils.Status;
 
 public class Multiply extends ReservationStation {
 
-    public float Vj;
-    public float Vk;
+    public Float Vj;
+    public Float Vk;
     public String Qj;
     public String Qk;
 
@@ -51,6 +51,17 @@ public class Multiply extends ReservationStation {
             result = ((FpMul) this.instruction).execute(Vj, Vk);
         else
             result = ((FpDiv) this.instruction).execute(Vj, Vk);
+    }
+
+    public void empty() {
+        this.Vj = null;
+        this.Vk = null;
+        this.Qj = null;
+        this.Qk = null;
+        this.instruction = null;
+        this.busy = false;
+        this.result = null;
+        this.remainingExecutionCycles = -1;
     }
 
 }
