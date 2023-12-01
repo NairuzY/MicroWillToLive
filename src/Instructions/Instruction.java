@@ -4,9 +4,9 @@ import Instructions.InstructionType;
 import utils.Status;
 
 public abstract class Instruction {
-    private InstructionType type;
-    Status status;
-    private int destinationRegister;
+    public InstructionType type;
+    public   Status status;
+    public int destinationRegister;
 
     public Instruction(InstructionType type, int destinationRegister) {
         this.type = type;
@@ -14,5 +14,11 @@ public abstract class Instruction {
         status=Status.NOT_ISSUED;
     }
 
-    public abstract void execute();
+    //  public  float execute(){
+        
+    //  }
+     
+    //  public  void execute(float Vj,float Vk);
+    //    public  void execute(float Vj);
+
 }

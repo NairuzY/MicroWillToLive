@@ -1,28 +1,56 @@
 package ReservationStations;
 
+import Instructions.FpDiv;
+import Instructions.FpMul;
 import Instructions.Instruction;
+import Storage.RegisterFile;
+import utils.Status;
 
 public class Multiply extends ReservationStation {
 
-    int Vj;
-    int Vk;
-    int Qj;
-    int Qk;
+    public float Vj;
+    public float Vk;
+    public String Qj;
+    public String Qk;
 
     public Multiply(String tag) {
         super(tag);
     }
 
-    public void setValues(int Vj, int Vk, int Qj, int Qk, Instruction instruction) {
-        this.Vj = Vj;
-        this.Vk = Vk;
-        this.Qj = Qj;
-        this.Qk = Qk;
+    public void setValues(Instruction instruction) {
+        instruction.status = Status.ISSUED;
+        int source1;
+        int source2;
+        if (instruction instanceof FpMul) {
+            source1 = ((FpMul) instruction).sourceRegister1;
+            source2 = ((FpMul) instruction).sourceRegister2;
+        } else {
+            source1 = ((FpDiv) instruction).sourceRegister1;
+            source2 = ((FpDiv) instruction).sourceRegister2;
+        }
+        if (RegisterFile.registerFile[source1].tag == null)
+            this.Vj = RegisterFile.registerFile[source1].value;
+        else {
+            this.Qj = RegisterFile.registerFile[source1].tag;
+            instruction.status = Status.WAITING_REGISTER;
+        }
+        if (RegisterFile.registerFile[source2].tag == null)
+            this.Vk = RegisterFile.registerFile[source2].value;
+        else {
+            this.Qk = RegisterFile.registerFile[source2].tag;
+            instruction.status = Status.WAITING_REGISTER;
+        }
         this.instruction = instruction;
+        this.busy = true;
+
     }
 
     @Override
     public void execute() {
-        this.instruction.execute();
+        if (this.instruction instanceof FpMul)
+            result = ((FpMul) this.instruction).execute(Vj, Vk);
+        else
+            result = ((FpDiv) this.instruction).execute(Vj, Vk);
     }
+
 }

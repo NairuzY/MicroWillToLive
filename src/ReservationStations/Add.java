@@ -1,6 +1,10 @@
 package ReservationStations;
 
+import Instructions.FpAdd;
+import Instructions.FpSub;
 import Instructions.Instruction;
+import Storage.RegisterFile;
+import utils.Status;
 
 public class Add extends ReservationStation {
 
@@ -20,13 +24,34 @@ public class Add extends ReservationStation {
 
     }
 
-    public void setValues(Float Vj, Float Vk, String Qj, String Qk, Instruction instruction) {
-        this.Vj = Vj;
-        this.Vk = Vk;
-        this.Qj = Qj;
-        this.Qk = Qk;
-        this.instruction = instruction;
-    }
+public void setValues(Instruction instruction) {
+    instruction.status=Status.ISSUED;
+         int source1;
+         int source2;
+        if(instruction instanceof FpAdd){
+     source1  =((FpAdd)instruction).sourceRegister1;
+    source2  =((FpAdd)instruction).sourceRegister2;
+        }
+else
+{
+     source1  =((FpSub)instruction).sourceRegister1;
+    source2  =((FpSub)instruction).sourceRegister2;
+        }
+if(RegisterFile.registerFile[source1].tag==null)
+  this.Vj = RegisterFile.registerFile[source1].value;
+else {instruction.status=Status.WAITING_REGISTER;
+ this.Qj = RegisterFile.registerFile[source1].tag;
+}      
+ if(RegisterFile.registerFile[source2].tag==null)
+  this.Vk = RegisterFile.registerFile[source2].value;
+else {instruction.status=Status.WAITING_REGISTER;
+ this.Qk = RegisterFile.registerFile[source2].tag;}
+
+this.instruction = instruction;
+this.busy=true;
+
+
+}
 
     public void setVj(Float Vj) {
         this.Vj = Vj;
@@ -59,5 +84,10 @@ public class Add extends ReservationStation {
     public String getQk() {
         return Qk;
     }
-
+    public void execute() {
+        if(this.instruction instanceof FpAdd)
+   result=   ((FpAdd)  this.instruction).execute(Vj,Vk);
+      else 
+     result=   ((FpSub)  this.instruction).execute(Vj,Vk);
+    }
 }

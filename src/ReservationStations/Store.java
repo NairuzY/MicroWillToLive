@@ -1,11 +1,13 @@
 package ReservationStations;
 
 import Instructions.Instruction;
+import Storage.RegisterFile;
+import utils.Status;
 
 public class Store extends ReservationStation {
 
-    int Vj;
-    int Qj;
+    float Vj;
+    public String Qj;
     public Integer address;
 
     public Store(String tag) {
@@ -13,15 +15,26 @@ public class Store extends ReservationStation {
         this.address = null;
     }
 
-    public void setValues(int Vj, int Qj, Integer address, Instruction instruction) {
-        this.Vj = Vj;
-        this.Qj = Qj;
-        this.address = address;
+    public void setValues(Instruction instruction) {
+        instruction.status=Status.ISSUED;
+        int source;
+
+        source = ((Instructions.Store) instruction).destinationRegister;
+
+        if (RegisterFile.registerFile[source].tag == null)
+            this.Vj = RegisterFile.registerFile[source].value;
+        else{
+            this.Qj = RegisterFile.registerFile[source].tag;
+            instruction.status=Status.WAITING_REGISTER;
+        }
         this.instruction = instruction;
+        this.address=((Instructions.Store) instruction).effectiveAddress;
+        this.busy=true;
+      
     }
 
     @Override
     public void execute() {
-        this.instruction.execute();
+        ((Instructions.Store)  this.instruction).execute();
     }
 }

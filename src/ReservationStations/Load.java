@@ -1,6 +1,9 @@
 package ReservationStations;
 
+import Instructions.FpAdd;
+import Instructions.FpSub;
 import Instructions.Instruction;
+import utils.Status;
 
 public class Load extends ReservationStation {
     private Integer effectiveAddress;
@@ -20,13 +23,17 @@ public class Load extends ReservationStation {
         this.effectiveAddress = effectiveAddress;
     }
 
-    public void setValues(Integer effectiveAddress, Instruction instruction) {
-        this.effectiveAddress = effectiveAddress;
+    public void setValues( Instruction instruction) {
+        this.effectiveAddress = ((Instructions.Load)instruction).effectiveAddress;
         this.instruction = instruction;
+        this.busy=true;
+        instruction.status=Status.ISSUED;
     }
 
     @Override
     public void execute() {
-        this.instruction.execute();
+
+        result=     ((Instructions.Load)  this.instruction).execute();
     }
+  
 }

@@ -1,17 +1,17 @@
 package Instructions;
 
-public class Store extends Instruction {
-    private int baseRegister;
-    private int offset;
+import Storage.Memory;
+import Storage.RegisterFile;
 
-    public Store(int sourceRegister, int baseRegister, int offset) {
+public class Store extends Instruction {
+    public int effectiveAddress;
+    
+    public Store(int sourceRegister, int effectiveAddress) {
         super(InstructionType.STORE, sourceRegister);
-        this.baseRegister = baseRegister;
-        this.offset = offset;
+        this.effectiveAddress=effectiveAddress;
     }
 
-    @Override
     public void execute() {
-
+    Memory.values[effectiveAddress]=RegisterFile.registerFile[destinationRegister].value;
     }
 }

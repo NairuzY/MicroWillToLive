@@ -1,17 +1,18 @@
 package Instructions;
 
-public class Load extends Instruction {
-    private int baseRegister;
-    private int offset;
+import Storage.Memory;
 
-    public Load(int destinationRegister, int baseRegister, int offset) {
+public class Load extends Instruction {
+    public int effectiveAddress;
+
+    public Load(int destinationRegister, int effectiveAddress) {
         super(InstructionType.LOAD, destinationRegister);
-        this.baseRegister = baseRegister;
-        this.offset = offset;
+        this.effectiveAddress=effectiveAddress;
+        
     }
 
-    @Override
-    public void execute() {
-
+    
+    public float execute() {
+     return Memory.values[effectiveAddress];
     }
 }
