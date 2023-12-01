@@ -3,24 +3,26 @@ import ReservationStations.*;
 import java.io.*;
 import java.util.*;
 
+import Instructions.Instruction;
+
 public class Main {
 
     int cycle = 0;
-    Instruction toBeIssued; 
-    int addLatency;
-    int subLatency;
-    int multLatency;
-    int divLatency;
-    int loadLatency;
-    int storeLatency;
-    int addReservationStations;
-    int multReservationStations;
-    int loadBuffer;
-    int storeBuffer;
-    Add[] addReservationStation;
-    Multiply[] multReservationStation;
-    Load[] loadReservationStation;
-    Store[] storeReservationStation;
+    static Instruction toBeIssued; 
+    static int addLatency;
+    static int subLatency;
+    static int multLatency;
+    static int divLatency;
+   static int loadLatency;
+    static int storeLatency;
+   static int addReservationStations;
+  static  int multReservationStations;
+static int loadBuffer;
+static    int storeBuffer;
+static Add[] addReservationStation;
+ static  Multiply[] multReservationStation;
+   static Load[] loadReservationStation;
+   static Store[] storeReservationStation;
 
     public static void fetch(String instruction) {
         if(toBeIssued == null) {
@@ -78,7 +80,7 @@ public class Main {
         multReservationStation = new Multiply[multReservationStations];
         loadReservationStation = new Load[loadBuffer];
         storeReservationStation = new Store[storeBuffer];
-
+         sc.close();
     }
     
     public static void main(String[] args) throws IOException {
