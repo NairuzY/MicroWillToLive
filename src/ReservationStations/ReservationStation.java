@@ -1,11 +1,22 @@
-package ReservationStations;    
+package ReservationStations;
 
-public interface ReservationStation {
+import Instructions.Instruction;
 
-    String tag = "";
-    boolean busy = false;
-    int Address = 0;
+public abstract class ReservationStation {
 
-    void execute();
+    String tag;
+    boolean busy;
+    Instruction instruction;
+
+    public ReservationStation(String tag) {
+        this.tag = tag;
+        this.busy = false;
+        this.instruction = null;
+
+    }
+
+    public void execute() {
+        this.instruction.execute();
+    }
 
 }
