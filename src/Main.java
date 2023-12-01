@@ -24,11 +24,30 @@ public class Main {
 
     public static void fetch(String instruction) {
         if(toBeIssued == null) {
-
             // fetch instruction from memory
             // decode instruction
             // create instruction object
         }
+    }
+
+    public static void issue() {
+        if(toBeIssued != null) {
+            // check if there is space in the reservation station
+            // if there is space, add the instruction to the reservation station
+            // if there is no space, do nothing
+        }
+    }
+
+    public static void execute() {
+        // check if there is an instruction in any of the reservation stations
+        // if there is an instruction, execute it
+        // if there is no instruction, do nothing
+    }
+
+    public static void write() {
+        // check if there is an instruction in any of the reservation stations with remaining time = 0
+        // if there is an instruction, write it to everything waiting for it
+        // if there is no instruction, do nothing
     }
 
     public static void start() {
