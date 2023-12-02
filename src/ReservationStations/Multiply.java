@@ -64,4 +64,18 @@ public class Multiply extends ReservationStation {
         this.remainingExecutionCycles = -1;
     }
 
+    @Override
+    public String toString() {
+        return "Multiply{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", instruction=" + instruction +
+                ", result=" + result +
+                ", remainingExecutionCycles=" + remainingExecutionCycles +
+                ", Vj=" + Vj +
+                ", Vk=" + Vk +
+                ", Qj='" + Qj + '\'' +
+                ", Qk='" + Qk + '\'' +
+                '}';
+    }
 }

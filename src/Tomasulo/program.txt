@@ -1,1 +1,3 @@
 ADD.D R1 R2 R3
+MUL.D R4 R1 R1
+L.D R4 1

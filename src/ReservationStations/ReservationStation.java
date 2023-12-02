@@ -21,4 +21,14 @@ public abstract class ReservationStation {
 
     abstract public void empty();
 
+@Override
+    public String toString() {
+        return "ReservationStation{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", instruction=" + instruction +
+                ", result=" + result +
+                ", remainingExecutionCycles=" + remainingExecutionCycles +
+                '}';
+    }
 }

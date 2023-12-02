@@ -8,6 +8,9 @@ public class Memory {
     values = new float [n];
    }
 
-
-
+   public static void print(){
+       for(int i=0;i<values.length;i++){
+           System.out.println("Memory "+i+" value "+values[i]);
+       }
+   }
 }

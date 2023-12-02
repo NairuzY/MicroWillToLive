@@ -7,6 +7,11 @@ public class Register {
         tag=null;
         value=0;
     }
+
+    public Register(float value){
+        tag=null;
+        this.value=value;
+    }
     public void setRegisterValue(float value){
         this.value=value;
     }
