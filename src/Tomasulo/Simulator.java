@@ -19,8 +19,8 @@ import Instructions.InstructionType;
 import Instructions.SubI;
 
 public class Simulator {
-    
-    static int cycle = 0;
+
+    static int cycle = 1;
     public static int pc = 0;
     static Instruction toBeIssued;
     static int addLatency;
@@ -469,7 +469,8 @@ public class Simulator {
         System.out.println("Initial Register file: ");
         RegisterFile.print();
         System.out.println("______________________");
-        
+        System.out.println("Cycle 0 is used to fetch the first instruction");
+
         while (true) {
             System.out.println("Cycle: " + cycle);
             issue();
