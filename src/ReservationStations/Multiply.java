@@ -7,16 +7,16 @@ import Storage.RegisterFile;
 import utils.Status;
 
 public class Multiply extends ReservationStation {
-
+    
     public Float Vj;
     public Float Vk;
     public String Qj;
     public String Qk;
-
+    
     public Multiply(String tag) {
         super(tag);
     }
-
+    
     public void setValues(Instruction instruction) {
         instruction.status = Status.ISSUED;
         int source1;
@@ -42,9 +42,9 @@ public class Multiply extends ReservationStation {
         }
         this.instruction = instruction;
         this.busy = true;
-
+        
     }
-
+    
     @Override
     public void execute() {
         if (this.instruction instanceof FpMul)
@@ -52,7 +52,7 @@ public class Multiply extends ReservationStation {
         else
             result = ((FpDiv) this.instruction).execute(Vj, Vk);
     }
-
+    
     public void empty() {
         this.Vj = null;
         this.Vk = null;
@@ -63,7 +63,7 @@ public class Multiply extends ReservationStation {
         this.result = null;
         this.remainingExecutionCycles = -1;
     }
-
+    
     @Override
     public String toString() {
         return "Multiply{" +

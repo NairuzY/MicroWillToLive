@@ -5,42 +5,42 @@ import Storage.RegisterFile;
 import utils.Status;
 
 public class Store extends ReservationStation {
-
+    
     public Float Vj;
     public String Qj;
     public Integer address;
-
+    
     public Store(String tag) {
         super(tag);
         this.address = null;
     }
-
+    
     public void setValues(Instruction instruction) {
-        instruction.status=Status.ISSUED;
+        instruction.status = Status.ISSUED;
         int source;
-
+        
         source = ((Instructions.Store) instruction).destinationRegister;
-
+        
         if (RegisterFile.registerFile[source].tag == null)
             this.Vj = RegisterFile.registerFile[source].value;
-        else{
+        else {
             this.Qj = RegisterFile.registerFile[source].tag;
-            instruction.status=Status.WAITING_REGISTER;
+            instruction.status = Status.WAITING_REGISTER;
         }
         this.instruction = instruction;
-        this.address=((Instructions.Store) instruction).effectiveAddress;
-        this.busy=true;
-      
+        this.address = ((Instructions.Store) instruction).effectiveAddress;
+        this.busy = true;
+        
     }
-
+    
     @Override
     public void execute() {
-        ((Instructions.Store)  this.instruction).execute();
+        ((Instructions.Store) this.instruction).execute();
     }
-
+    
     public void empty() {
-        this.Vj=null;
-        this.Qj=null;
+        this.Vj = null;
+        this.Qj = null;
         this.address = null;
         this.instruction = null;
         this.busy = false;

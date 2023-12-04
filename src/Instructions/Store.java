@@ -8,10 +8,10 @@ public class Store extends Instruction {
     
     public Store(int sourceRegister, int effectiveAddress) {
         super(InstructionType.STORE, sourceRegister);
-        this.effectiveAddress=effectiveAddress;
+        this.effectiveAddress = effectiveAddress;
     }
-
+    
     public void execute() {
-    Memory.values[effectiveAddress]=RegisterFile.registerFile[destinationRegister].value;
+        Memory.values[effectiveAddress] = RegisterFile.registerFile[destinationRegister].value;
     }
 }

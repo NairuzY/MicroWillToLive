@@ -4,15 +4,15 @@ import Storage.Memory;
 
 public class Load extends Instruction {
     public int effectiveAddress;
-
+    
     public Load(int destinationRegister, int effectiveAddress) {
         super(InstructionType.LOAD, destinationRegister);
-        this.effectiveAddress=effectiveAddress;
+        this.effectiveAddress = effectiveAddress;
         
     }
-
+    
     
     public float execute() {
-     return Memory.values[effectiveAddress];
+        return Memory.values[effectiveAddress];
     }
 }

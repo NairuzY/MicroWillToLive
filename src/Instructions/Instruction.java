@@ -5,17 +5,17 @@ import utils.Status;
 
 public abstract class Instruction {
     public InstructionType type;
-    public   Status status;
+    public Status status;
     public int destinationRegister;
-    public int issuedCycle=0;
-    public int executedCycle=0;
-
+    public int issuedCycle = 0;
+    public int executedCycle = 0;
+    
     public Instruction(InstructionType type, int destinationRegister) {
         this.type = type;
         this.destinationRegister = destinationRegister;
-        status=Status.NOT_ISSUED;
+        status = Status.NOT_ISSUED;
     }
-
+    
     @Override
     public String toString() {
         return "Instruction{" +
@@ -26,12 +26,12 @@ public abstract class Instruction {
                 ", executedCycle=" + executedCycle +
                 '}';
     }
-
+    
     //  public  float execute(){
-        
+    
     //  }
-     
+    
     //  public  void execute(float Vj,float Vk);
     //    public  void execute(float Vj);
-
+    
 }
