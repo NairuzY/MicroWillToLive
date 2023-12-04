@@ -472,7 +472,7 @@ public class Simulator {
         System.out.println("Cycle 0 is used to fetch the first instruction");
 
         while (true) {
-            System.out.println("Cycle: " + cycle + '\n');
+            System.out.println('\n'+ "Cycle: " + cycle);
             issue();
             execute();
             highestWritingPriority();
@@ -494,6 +494,8 @@ public class Simulator {
             for (int i = 0; i < multReservationStations; i++) {
                 multReservationStation[i].print();
             }
+            System.out.println("Memory: ");
+            Memory.print();
             cycle++;
             System.out.println("______________________");
             boolean isDone = true;
@@ -506,10 +508,6 @@ public class Simulator {
                 break;
             }
         }
-        System.out.println("Final Register file: ");
-        RegisterFile.print();
-        System.out.println("Final Memory: ");
-        Memory.print();
     }
     
 }
