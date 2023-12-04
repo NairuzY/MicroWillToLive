@@ -3,6 +3,7 @@ package ReservationStations;
 import Instructions.FpAdd;
 import Instructions.FpSub;
 import Instructions.Instruction;
+import Instructions.InstructionType;
 import Storage.RegisterFile;
 import utils.Status;
 
@@ -103,4 +104,19 @@ public class Add extends ReservationStation {
         else
             result = ((FpSub) this.instruction).execute(Vj, Vk);
     }
+
+    @Override
+    public void print() {
+        System.out.println("{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", op=" + (instruction==null?"0": (instruction.type == InstructionType.FP_ADD?"ADD":"SUB")) +
+                ", Vj=" + Vj +
+                ", Vk=" + Vk +
+                ", Qj='" + Qj + '\'' +
+                ", Qk='" + Qk + '\'' +
+                '}');
+    }
+
+    
 }

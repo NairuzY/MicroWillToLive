@@ -3,6 +3,7 @@ package ReservationStations;
 import Instructions.FpDiv;
 import Instructions.FpMul;
 import Instructions.Instruction;
+import Instructions.InstructionType;
 import Storage.RegisterFile;
 import utils.Status;
 
@@ -77,5 +78,18 @@ public class Multiply extends ReservationStation {
                 ", Qj='" + Qj + '\'' +
                 ", Qk='" + Qk + '\'' +
                 '}';
+    }
+
+    @Override
+    public void print() {
+        System.out.println("{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", op=" + (instruction==null?0:(instruction.type == InstructionType.FP_MUL?"MUL":"DIV")) +
+                ", Vj=" + Vj +
+                ", Vk=" + Vk +
+                ", Qj='" + Qj + '\'' +
+                ", Qk='" + Qk + '\'' +
+                '}');
     }
 }

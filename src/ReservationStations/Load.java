@@ -1,7 +1,5 @@
 package ReservationStations;
 
-import Instructions.FpAdd;
-import Instructions.FpSub;
 import Instructions.Instruction;
 import utils.Status;
 
@@ -42,6 +40,15 @@ public class Load extends ReservationStation {
         this.busy = false;
         this.result = null;
         this.remainingExecutionCycles = -1;
+    }
+
+    @Override
+    public void print() {
+        System.out.println("{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", A=" + effectiveAddress +
+                '}');
     }
     
 }

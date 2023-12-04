@@ -47,4 +47,13 @@ public class Store extends ReservationStation {
         this.result = null;
         this.remainingExecutionCycles = -1;
     }
+
+    @Override
+    public void print() {
+        System.out.println("{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", A=" + address +
+                '}');
+    }
 }
