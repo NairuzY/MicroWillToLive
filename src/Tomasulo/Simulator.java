@@ -127,19 +127,29 @@ public class Simulator {
         int index = -1;
         if (pc >= Program.size())
             return;
-
-        if (Program.get(pc).type == InstructionType.FP_ADD || Program.get(pc).type == InstructionType.FP_SUB) {
+        InstructionType type = Program.get(pc).type;
+        if (type == InstructionType.FP_ADD || type == InstructionType.FP_SUB) {
             index = checkEmptyReservationStation(addReservationStation);
             if (index != -1) {
-                System.out.println("Pc= " + Program.get(pc));
-                System.out.println(RegisterFile.floatRegisterFile[Program.get(pc).destinationRegister].tag);
-                RegisterFile.floatRegisterFile[Program.get(pc).destinationRegister].tag = addReservationStation[index].tag;
+                RegisterFile.floatRegisterFile[Program
+                        .get(pc).destinationRegister].tag = addReservationStation[index].tag;
                 addReservationStation[index].setValues(Program.get(pc++));
                 addReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
             }
 
-        } else if (Program.get(pc).type == InstructionType.FP_MUL || Program.get(pc).type == InstructionType.FP_DIV) {
+        } else if (type == InstructionType.INT_ADDI
+                || type == InstructionType.INT_SUBI || type == InstructionType.INT_ADD
+                || type == InstructionType.BRANCH) {
+            index = checkEmptyReservationStation(addReservationStation);
+            if (index != -1) {
+                RegisterFile.integerRegisterFile[Program
+                        .get(pc).destinationRegister].tag = addReservationStation[index].tag;
+                addReservationStation[index].setValues(Program.get(pc++));
+                addReservationStation[index].instruction.issuedCycle = cycle;
+                System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+            }
+        } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
 
             index = checkEmptyReservationStation(multReservationStation);
             if (index != -1) {
@@ -149,7 +159,7 @@ public class Simulator {
                 multReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + multReservationStation[index].instruction);
             }
-        } else if (Program.get(pc).type == InstructionType.LOAD) {
+        } else if (type == InstructionType.LOAD) {
             index = checkEmptyReservationStation(loadReservationStation);
             if (index != -1) {
 
@@ -159,7 +169,7 @@ public class Simulator {
                 loadReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + loadReservationStation[index].instruction);
             }
-        } else if (Program.get(pc).type == InstructionType.STORE) {
+        } else if (type == InstructionType.STORE) {
             index = checkEmptyReservationStation(storeReservationStation);
             if (index != -1) {
                 storeReservationStation[index].setValues(Program.get(pc++));
@@ -167,8 +177,6 @@ public class Simulator {
                 System.out.println("Issuing this instruction: " + storeReservationStation[index].instruction);
             }
         }
-        /////////////////////////////////////////////////////////////////////////////
-        /// we dont handled the case of SUBI & ADDI & BNEZ
 
     }
 
@@ -360,7 +368,8 @@ public class Simulator {
         for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
             if (RegisterFile.floatRegisterFile[i].tag != null) {
                 if (priority.containsKey(RegisterFile.floatRegisterFile[i].tag))
-                    priority.put(RegisterFile.floatRegisterFile[i].tag, priority.get(RegisterFile.floatRegisterFile[i].tag) + 1);
+                    priority.put(RegisterFile.floatRegisterFile[i].tag,
+                            priority.get(RegisterFile.floatRegisterFile[i].tag) + 1);
             }
         }
         for (int i = 0; i < addReservationStations; i++) {
