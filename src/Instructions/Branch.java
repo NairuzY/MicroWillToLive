@@ -11,12 +11,13 @@ public class Branch extends Instruction {
     public Branch(int sourceRegister, int targetAddress) {
         super(InstructionType.BRANCH, -1);
         this.sourceRegister = sourceRegister;
-        this.targetAddress = targetAddress;
+        this.targetAddress = 0;
     }
     
     
-    public void execute() {
-        if (RegisterFile.registerFile[sourceRegister].value != 0)
-            Simulator.pc = targetAddress;
+    public void execute(float Vj, float Vk) {
+        if (Vj!= Vk)
+            Simulator.pc = 0;
     }
+
 }

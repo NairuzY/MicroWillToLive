@@ -1,9 +1,13 @@
 package ReservationStations;
 
+import Instructions.AddI;
+import Instructions.Branch;
+import Instructions.DADD;
 import Instructions.FpAdd;
 import Instructions.FpSub;
 import Instructions.Instruction;
 import Instructions.InstructionType;
+import Instructions.SubI;
 import Storage.RegisterFile;
 import utils.Status;
 
@@ -29,6 +33,8 @@ public class Add extends ReservationStation {
         instruction.status = Status.ISSUED;
         int source1;
         int source2;
+        int imm;
+        if(instruction instanceof FpAdd||instruction instanceof FpSub){
         if (instruction instanceof FpAdd) {
             source1 = ((FpAdd) instruction).sourceRegister1;
             source2 = ((FpAdd) instruction).sourceRegister2;
@@ -36,19 +42,37 @@ public class Add extends ReservationStation {
             source1 = ((FpSub) instruction).sourceRegister1;
             source2 = ((FpSub) instruction).sourceRegister2;
         }
-        if (RegisterFile.registerFile[source1].tag == null)
-            this.Vj = RegisterFile.registerFile[source1].value;
+
+        if (RegisterFile.floatRegisterFile[source1].tag == null)
+            this.Vj = RegisterFile.floatRegisterFile[source1].value;
         else {
             instruction.status = Status.WAITING_REGISTER;
-            this.Qj = RegisterFile.registerFile[source1].tag;
+            this.Qj = RegisterFile.floatRegisterFile[source1].tag;
         }
-        if (RegisterFile.registerFile[source2].tag == null)
-            this.Vk = RegisterFile.registerFile[source2].value;
+        if (RegisterFile.floatRegisterFile[source2].tag == null)
+            this.Vk = RegisterFile.floatRegisterFile[source2].value;
         else {
             instruction.status = Status.WAITING_REGISTER;
-            this.Qk = RegisterFile.registerFile[source2].tag;
+            this.Qk = RegisterFile.floatRegisterFile[source2].tag;
         }
-        
+    }else{
+
+if (instruction instanceof DADD) {
+            source1 = ((DADD) instruction).sourceRegister1;
+            source2 = ((DADD) instruction).sourceRegister2;
+        } else if (instruction instanceof AddI) {
+            source1 = ((AddI) instruction).sourceRegister1;
+            imm = ((AddI) instruction).imm;
+        }
+        else if (instruction instanceof SubI) {
+
+        }
+        else if (instruction instanceof Branch) {
+
+        }
+
+
+    }
         this.instruction = instruction;
         this.busy = true;
         

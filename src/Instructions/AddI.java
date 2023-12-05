@@ -3,16 +3,16 @@ package Instructions;
 import Storage.RegisterFile;
 
 public class AddI extends Instruction {
-    private int sourceRegister1;
-    private int sourceRegister2;
+    public int sourceRegister1;
+    public int imm;
     
-    public AddI(int destinationRegister, int sourceRegister1, int sourceRegister2) {
-        super(InstructionType.INT_ADD, destinationRegister);
-        
-    }
+    public AddI(int destinationRegister, int sourceRegister1, int imm) {
+        super(InstructionType.INT_ADDI, destinationRegister);
+        this.sourceRegister1 = sourceRegister1;
+        this.imm = imm;
+    } 
     
-    
-    public float execute() {
-        return RegisterFile.registerFile[sourceRegister1].value + RegisterFile.registerFile[sourceRegister2].value;
+       public float execute(float Vj, float Vk) {
+        return Vj +Vk;
     }
 }
