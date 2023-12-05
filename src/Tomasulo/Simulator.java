@@ -1,7 +1,6 @@
 package Tomasulo;
 
 import ReservationStations.*;
-import Storage.IntegerRegisterFile;
 import Storage.Memory;
 import Storage.RegisterFile;
 import utils.Status;
@@ -42,9 +41,8 @@ public class Simulator {
     static Load[] loadReservationStation;
     static Store[] storeReservationStation;
 
-    static RegisterFile registerFile = new RegisterFile();
+    static RegisterFile floatRegisterFile = new RegisterFile();
     static Memory memory = new Memory(4);
-    static IntegerRegisterFile integerRegisterFile = new IntegerRegisterFile();
 
     public static void ConvertToInstruction() throws IOException {
         InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
@@ -134,8 +132,8 @@ public class Simulator {
             index = checkEmptyReservationStation(addReservationStation);
             if (index != -1) {
                 System.out.println("Pc= " + Program.get(pc));
-                System.out.println(RegisterFile.registerFile[Program.get(pc).destinationRegister].tag);
-                RegisterFile.registerFile[Program.get(pc).destinationRegister].tag = addReservationStation[index].tag;
+                System.out.println(RegisterFile.floatRegisterFile[Program.get(pc).destinationRegister].tag);
+                RegisterFile.floatRegisterFile[Program.get(pc).destinationRegister].tag = addReservationStation[index].tag;
                 addReservationStation[index].setValues(Program.get(pc++));
                 addReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
@@ -146,7 +144,7 @@ public class Simulator {
             index = checkEmptyReservationStation(multReservationStation);
             if (index != -1) {
                 multReservationStation[index].setValues(Program.get(pc));
-                RegisterFile.registerFile[Program
+                RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = multReservationStation[index].tag;
                 multReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + multReservationStation[index].instruction);
@@ -156,7 +154,7 @@ public class Simulator {
             if (index != -1) {
 
                 loadReservationStation[index].setValues(Program.get(pc));
-                RegisterFile.registerFile[Program
+                RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = loadReservationStation[index].tag;
                 loadReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + loadReservationStation[index].instruction);
@@ -359,10 +357,10 @@ public class Simulator {
         }
         if (priority.isEmpty())
             return;
-        for (int i = 0; i < RegisterFile.registerFile.length; i++) {
-            if (RegisterFile.registerFile[i].tag != null) {
-                if (priority.containsKey(RegisterFile.registerFile[i].tag))
-                    priority.put(RegisterFile.registerFile[i].tag, priority.get(RegisterFile.registerFile[i].tag) + 1);
+        for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
+            if (RegisterFile.floatRegisterFile[i].tag != null) {
+                if (priority.containsKey(RegisterFile.floatRegisterFile[i].tag))
+                    priority.put(RegisterFile.floatRegisterFile[i].tag, priority.get(RegisterFile.floatRegisterFile[i].tag) + 1);
             }
         }
         for (int i = 0; i < addReservationStations; i++) {
@@ -408,10 +406,10 @@ public class Simulator {
     }
 
     public static void write(ReservationStation station) {
-        for (int i = 0; i < RegisterFile.registerFile.length; i++) {
-            if (RegisterFile.registerFile[i].tag == station.tag) {
-                RegisterFile.registerFile[i].tag = null;
-                RegisterFile.registerFile[i].value = station.result;
+        for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
+            if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
+                RegisterFile.floatRegisterFile[i].tag = null;
+                RegisterFile.floatRegisterFile[i].value = station.result;
             }
         }
         for (int i = 0; i < addReservationStations; i++) {

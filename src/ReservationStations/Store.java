@@ -21,10 +21,10 @@ public class Store extends ReservationStation {
         
         source = ((Instructions.Store) instruction).destinationRegister;
         
-        if (RegisterFile.registerFile[source].tag == null)
-            this.Vj = RegisterFile.registerFile[source].value;
+        if (RegisterFile.floatRegisterFile[source].tag == null)
+            this.Vj = RegisterFile.floatRegisterFile[source].value;
         else {
-            this.Qj = RegisterFile.registerFile[source].tag;
+            this.Qj = RegisterFile.floatRegisterFile[source].tag;
             instruction.status = Status.WAITING_REGISTER;
         }
         this.instruction = instruction;

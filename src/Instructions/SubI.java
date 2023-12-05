@@ -2,8 +2,8 @@ package Instructions;
 
 
 public class SubI extends Instruction {
-    private int sourceRegister1;
-    private int imm;
+    public int sourceRegister1;
+    public int imm;
     
     public SubI(int destinationRegister, int sourceRegister1, int imm) {
         super(InstructionType.INT_SUBI, destinationRegister);

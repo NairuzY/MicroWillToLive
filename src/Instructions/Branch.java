@@ -1,12 +1,11 @@
 package Instructions;
 
-import Storage.RegisterFile;
 import Tomasulo.Simulator;
 
 
 public class Branch extends Instruction {
-    private int targetAddress;
-    private int sourceRegister;
+    public int targetAddress;
+    public int sourceRegister;
     
     public Branch(int sourceRegister, int targetAddress) {
         super(InstructionType.BRANCH, -1);

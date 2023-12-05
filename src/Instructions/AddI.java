@@ -1,7 +1,5 @@
 package Instructions;
 
-import Storage.RegisterFile;
-
 public class AddI extends Instruction {
     public int sourceRegister1;
     public int imm;
