@@ -14,4 +14,7 @@ public class Store extends Instruction {
     public void execute() {
         Memory.values[effectiveAddress] = RegisterFile.floatRegisterFile[destinationRegister].value;
     }
+    public Instruction clone(){
+        return new Store(this.destinationRegister, this.effectiveAddress);
+    }
 }

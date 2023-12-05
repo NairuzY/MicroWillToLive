@@ -23,7 +23,7 @@ public class Load extends ReservationStation {
     
     public void setValues(Instruction instruction) {
         this.effectiveAddress = ((Instructions.Load) instruction).effectiveAddress;
-        this.instruction = instruction;
+        this.instruction = instruction.clone();
         this.busy = true;
         instruction.status = Status.ISSUED;
     }

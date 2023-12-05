@@ -13,4 +13,7 @@ public class FpMul extends Instruction {
     public float execute(float Vj, float Vk) {
         return Vj * Vk;
     }
+    public Instruction clone(){
+        return new FpMul(this.destinationRegister, this.sourceRegister1, this.sourceRegister2);
+    }
 }

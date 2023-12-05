@@ -27,7 +27,7 @@ public class Store extends ReservationStation {
             this.Qj = RegisterFile.floatRegisterFile[source].tag;
             instruction.status = Status.WAITING_REGISTER;
         }
-        this.instruction = instruction;
+        this.instruction = instruction.clone();
         this.address = ((Instructions.Store) instruction).effectiveAddress;
         this.busy = true;
         

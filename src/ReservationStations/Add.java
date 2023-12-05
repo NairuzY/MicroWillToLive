@@ -61,7 +61,7 @@ public class Add extends ReservationStation {
                 source1 = ((DADD) instruction).sourceRegister1;
                 source2 = ((DADD) instruction).sourceRegister2;
                 if (RegisterFile.integerRegisterFile[source2].tag == null)
-                    this.Vk = RegisterFile.floatRegisterFile[source2].value;
+                    this.Vk = RegisterFile.integerRegisterFile[source2].value;
                 else {
                     instruction.status = Status.WAITING_REGISTER;
                     this.Qk = RegisterFile.integerRegisterFile[source2].tag;
@@ -73,7 +73,7 @@ public class Add extends ReservationStation {
             } else if (instruction instanceof SubI) {
                 source1 = ((SubI) instruction).sourceRegister1;
                 this.Vk = (float) ((SubI) instruction).imm;
-            } else {
+            } else {// branch
                 source1 = ((Branch) instruction).sourceRegister;
                 this.Vk = (float) 0;
             }
@@ -81,11 +81,11 @@ public class Add extends ReservationStation {
                 this.Vj = RegisterFile.integerRegisterFile[source1].value;
             } else {
                 instruction.status = Status.WAITING_REGISTER;
-                this.Qj = RegisterFile.floatRegisterFile[source1].tag;
+                this.Qj = RegisterFile.integerRegisterFile[source1].tag;
             }
 
         }
-        this.instruction = instruction;
+        this.instruction = instruction.clone();
         this.busy = true;
 
     }

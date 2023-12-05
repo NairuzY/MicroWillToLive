@@ -15,4 +15,7 @@ public class Load extends Instruction {
     public float execute() {
         return Memory.values[effectiveAddress];
     }
+    public Instruction clone(){
+        return new Load(this.destinationRegister, this.effectiveAddress);
+    }
 }

@@ -41,7 +41,7 @@ public class Multiply extends ReservationStation {
             this.Qk = RegisterFile.floatRegisterFile[source2].tag;
             instruction.status = Status.WAITING_REGISTER;
         }
-        this.instruction = instruction;
+        this.instruction = instruction.clone();
         this.busy = true;
         
     }

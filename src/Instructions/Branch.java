@@ -7,7 +7,7 @@ public class Branch extends Instruction {
     public int targetAddress;
     public int sourceRegister;
     
-    public Branch(int sourceRegister, int targetAddress) {
+    public Branch(int sourceRegister) {
         super(InstructionType.BRANCH, -1);
         this.sourceRegister = sourceRegister;
         this.targetAddress = 0;
@@ -19,4 +19,8 @@ public class Branch extends Instruction {
             Simulator.pc = 0;
     }
 
+
+    public Instruction clone(){
+        return new Branch(this.sourceRegister);
+    }
 }

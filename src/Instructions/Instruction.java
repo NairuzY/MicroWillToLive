@@ -26,11 +26,5 @@ public abstract class Instruction {
                 '}';
     }
     
-    //  public  float execute(){
-    
-    //  }
-    
-    //  public  void execute(float Vj,float Vk);
-    //    public  void execute(float Vj);
-    
+abstract public Instruction clone();  
 }

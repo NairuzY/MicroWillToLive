@@ -87,8 +87,7 @@ public class Simulator {
                     Program.add(dadd);
                     break;
                 case "BNEZ":
-                    Instruction bnez = new Branch(Integer.parseInt(fields[1].substring(1)),
-                            Integer.parseInt(fields[2]));
+                    Instruction bnez = new Branch(Integer.parseInt(fields[1].substring(1)));
                     Program.add(bnez);
                     break;
                 case "S.D":
@@ -131,10 +130,11 @@ public class Simulator {
         if (type == InstructionType.FP_ADD || type == InstructionType.FP_SUB) {
             index = checkEmptyReservationStation(addReservationStation);
             if (index != -1) {
-                RegisterFile.floatRegisterFile[Program
-                        .get(pc).destinationRegister].tag = addReservationStation[index].tag;
-                addReservationStation[index].setValues(Program.get(pc++));
+                addReservationStation[index].setValues(Program.get(pc));
                 addReservationStation[index].instruction.issuedCycle = cycle;
+                RegisterFile.floatRegisterFile[Program
+                        .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
+
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
             }
 
@@ -143,10 +143,13 @@ public class Simulator {
                 || type == InstructionType.BRANCH) {
             index = checkEmptyReservationStation(addReservationStation);
             if (index != -1) {
-                RegisterFile.integerRegisterFile[Program
-                        .get(pc).destinationRegister].tag = addReservationStation[index].tag;
-                addReservationStation[index].setValues(Program.get(pc++));
+                addReservationStation[index].setValues(Program.get(pc));
                 addReservationStation[index].instruction.issuedCycle = cycle;
+                if( type == InstructionType.BRANCH)
+                pc++;
+                else{
+                RegisterFile.integerRegisterFile[Program
+                        .get(pc++).destinationRegister].tag = addReservationStation[index].tag;}
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
             }
         } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
@@ -154,9 +157,9 @@ public class Simulator {
             index = checkEmptyReservationStation(multReservationStation);
             if (index != -1) {
                 multReservationStation[index].setValues(Program.get(pc));
+                multReservationStation[index].instruction.issuedCycle = cycle;
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = multReservationStation[index].tag;
-                multReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + multReservationStation[index].instruction);
             }
         } else if (type == InstructionType.LOAD) {
@@ -164,9 +167,9 @@ public class Simulator {
             if (index != -1) {
 
                 loadReservationStation[index].setValues(Program.get(pc));
+                loadReservationStation[index].instruction.issuedCycle = cycle;
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = loadReservationStation[index].tag;
-                loadReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + loadReservationStation[index].instruction);
             }
         } else if (type == InstructionType.STORE) {
@@ -218,7 +221,7 @@ public class Simulator {
                             System.out.println("Executing this instruction: " + addReservationStation[i].instruction);
                             if (addReservationStation[i].instruction instanceof FpAdd)
                                 addReservationStation[i].remainingExecutionCycles = addLatency;
-                            else if(addReservationStation[i].instruction instanceof FpSub)
+                            else if (addReservationStation[i].instruction instanceof FpSub)
                                 addReservationStation[i].remainingExecutionCycles = subLatency;
                             else
                                 addReservationStation[i].remainingExecutionCycles = integerLatency;
@@ -533,11 +536,12 @@ public class Simulator {
             Memory.print();
             cycle++;
             System.out.println("______________________");
-            boolean isDone = true;
-            for (int i = 0; i < Program.size(); i++) {
-                if (Program.get(i).status != Status.FINISHED) {
-                    isDone = false;
-                }
+            boolean isDone = false;
+            if (checkEmptyReservationStation(addReservationStation) == -1
+                    && checkEmptyReservationStation(multReservationStation) == -1 &&
+                    checkEmptyReservationStation(loadReservationStation) == -1
+                    && checkEmptyReservationStation(storeReservationStation) == -1) {
+                isDone = true;
             }
             if (isDone) {
                 break;
