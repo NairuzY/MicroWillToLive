@@ -218,8 +218,10 @@ public class Simulator {
                             System.out.println("Executing this instruction: " + addReservationStation[i].instruction);
                             if (addReservationStation[i].instruction instanceof FpAdd)
                                 addReservationStation[i].remainingExecutionCycles = addLatency;
-                            else
+                            else if(addReservationStation[i].instruction instanceof FpSub)
                                 addReservationStation[i].remainingExecutionCycles = subLatency;
+                            else
+                                addReservationStation[i].remainingExecutionCycles = integerLatency;
                         }
                     }
 
@@ -372,6 +374,13 @@ public class Simulator {
                             priority.get(RegisterFile.floatRegisterFile[i].tag) + 1);
             }
         }
+        for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
+            if (RegisterFile.integerRegisterFile[i].tag != null) {
+                if (priority.containsKey(RegisterFile.integerRegisterFile[i].tag))
+                    priority.put(RegisterFile.integerRegisterFile[i].tag,
+                            priority.get(RegisterFile.integerRegisterFile[i].tag) + 1);
+            }
+        }
         for (int i = 0; i < addReservationStations; i++) {
             if (addReservationStation[i].busy == true) {
                 if (addReservationStation[i].getQj() != null) {
@@ -419,6 +428,12 @@ public class Simulator {
             if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
                 RegisterFile.floatRegisterFile[i].tag = null;
                 RegisterFile.floatRegisterFile[i].value = station.result;
+            }
+        }
+        for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
+            if (RegisterFile.integerRegisterFile[i].tag == station.tag) {
+                RegisterFile.integerRegisterFile[i].tag = null;
+                RegisterFile.integerRegisterFile[i].value = station.result;
             }
         }
         for (int i = 0; i < addReservationStations; i++) {
