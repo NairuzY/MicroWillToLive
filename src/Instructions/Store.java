@@ -12,6 +12,6 @@ public class Store extends Instruction {
     }
     
     public void execute() {
-        Memory.values[effectiveAddress] = RegisterFile.registerFile[destinationRegister].value;
+        Memory.values[effectiveAddress] = RegisterFile.floatRegisterFile[destinationRegister].value;
     }
 }

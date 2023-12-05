@@ -3,6 +3,7 @@ package ReservationStations;
 import Instructions.FpDiv;
 import Instructions.FpMul;
 import Instructions.Instruction;
+import Instructions.InstructionType;
 import Storage.RegisterFile;
 import utils.Status;
 
@@ -28,16 +29,16 @@ public class Multiply extends ReservationStation {
             source1 = ((FpDiv) instruction).sourceRegister1;
             source2 = ((FpDiv) instruction).sourceRegister2;
         }
-        if (RegisterFile.registerFile[source1].tag == null)
-            this.Vj = RegisterFile.registerFile[source1].value;
+        if (RegisterFile.floatRegisterFile[source1].tag == null)
+            this.Vj = RegisterFile.floatRegisterFile[source1].value;
         else {
-            this.Qj = RegisterFile.registerFile[source1].tag;
+            this.Qj = RegisterFile.floatRegisterFile[source1].tag;
             instruction.status = Status.WAITING_REGISTER;
         }
-        if (RegisterFile.registerFile[source2].tag == null)
-            this.Vk = RegisterFile.registerFile[source2].value;
+        if (RegisterFile.floatRegisterFile[source2].tag == null)
+            this.Vk = RegisterFile.floatRegisterFile[source2].value;
         else {
-            this.Qk = RegisterFile.registerFile[source2].tag;
+            this.Qk = RegisterFile.floatRegisterFile[source2].tag;
             instruction.status = Status.WAITING_REGISTER;
         }
         this.instruction = instruction;
@@ -77,5 +78,18 @@ public class Multiply extends ReservationStation {
                 ", Qj='" + Qj + '\'' +
                 ", Qk='" + Qk + '\'' +
                 '}';
+    }
+
+    @Override
+    public void print() {
+        System.out.println("{" +
+                "tag='" + tag + '\'' +
+                ", busy=" + busy +
+                ", op=" + (instruction==null?0:(instruction.type == InstructionType.FP_MUL?"MUL":"DIV")) +
+                ", Vj=" + Vj +
+                ", Vk=" + Vk +
+                ", Qj='" + Qj + '\'' +
+                ", Qk='" + Qk + '\'' +
+                '}');
     }
 }

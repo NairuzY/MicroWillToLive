@@ -20,6 +20,8 @@ public abstract class ReservationStation {
     abstract public void execute();
     
     abstract public void empty();
+
+    abstract public void print();
     
     @Override
     public String toString() {
