@@ -137,8 +137,17 @@ public class Add extends ReservationStation {
     public void execute() {
         if (this.instruction instanceof FpAdd)
             result = ((FpAdd) this.instruction).execute(Vj, Vk);
-        else
+        else if(this.instruction instanceof FpSub)
             result = ((FpSub) this.instruction).execute(Vj, Vk);
+        else if(this.instruction instanceof AddI)
+            result = ((AddI) this.instruction).execute(Vj, Vk);
+        else if(this.instruction instanceof SubI)
+            result = ((SubI) this.instruction).execute(Vj, Vk);
+        else if(this.instruction instanceof DADD)
+            result = ((DADD) this.instruction).execute(Vj, Vk);    
+        else if(this.instruction instanceof Branch)
+           ((Branch) this.instruction).execute(Vj, Vk);      
+
     }
 
     @Override
@@ -146,7 +155,7 @@ public class Add extends ReservationStation {
         System.out.println("{" +
                 "tag='" + tag + '\'' +
                 ", busy=" + busy +
-                ", op=" + (instruction == null ? "0" : (instruction.type == InstructionType.FP_ADD ? "ADD" : "SUB")) +
+                ", op=" + (instruction == null ? "0" : instruction.type ) +
                 ", Vj=" + Vj +
                 ", Vk=" + Vk +
                 ", Qj='" + Qj + '\'' +

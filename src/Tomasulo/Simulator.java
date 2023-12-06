@@ -553,7 +553,7 @@ public class Simulator {
                     && checkEmpty(storeReservationStation)) {
                 isDone = true;
             }
-            if (isDone) {
+            if (isDone&&pc>=Program.size()) {
                 break;
             }
         }
