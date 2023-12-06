@@ -14,6 +14,6 @@ public class AddI extends Instruction {
         return Vj +Vk;
     }
     public Instruction clone(){
-        return new AddI(this.destinationRegister, this.sourceRegister1, this.imm)
+        return new AddI(this.destinationRegister, this.sourceRegister1, this.imm);
     }
 }
