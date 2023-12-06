@@ -19,7 +19,6 @@ public class Multiply extends ReservationStation {
     }
     
     public void setValues(Instruction instruction) {
-        instruction.status = Status.ISSUED;
         int source1;
         int source2;
         if (instruction instanceof FpMul) {
@@ -42,6 +41,7 @@ public class Multiply extends ReservationStation {
             instruction.status = Status.WAITING_REGISTER;
         }
         this.instruction = instruction.clone();
+        this.instruction.status = Status.ISSUED;
         this.busy = true;
         
     }

@@ -7,6 +7,8 @@ public class Memory {
     
     public Memory(int n) {
         values = new float[n];
+        for (int i=0;i<values.length;i++)
+        values[i]=i+1;
     }
     
     public static void print() {

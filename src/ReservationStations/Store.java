@@ -16,7 +16,6 @@ public class Store extends ReservationStation {
     }
     
     public void setValues(Instruction instruction) {
-        instruction.status = Status.ISSUED;
         int source;
         
         source = ((Instructions.Store) instruction).destinationRegister;
@@ -28,6 +27,7 @@ public class Store extends ReservationStation {
             instruction.status = Status.WAITING_REGISTER;
         }
         this.instruction = instruction.clone();
+        this.instruction.status = Status.ISSUED;
         this.address = ((Instructions.Store) instruction).effectiveAddress;
         this.busy = true;
         

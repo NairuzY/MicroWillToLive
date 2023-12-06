@@ -25,7 +25,7 @@ public class Load extends ReservationStation {
         this.effectiveAddress = ((Instructions.Load) instruction).effectiveAddress;
         this.instruction = instruction.clone();
         this.busy = true;
-        instruction.status = Status.ISSUED;
+        this.instruction.status = Status.ISSUED;
     }
     
     @Override

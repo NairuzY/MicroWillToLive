@@ -42,7 +42,7 @@ public class Simulator {
     static Store[] storeReservationStation;
 
     static RegisterFile floatRegisterFile = new RegisterFile();
-    static Memory memory = new Memory(4);
+    static Memory memory = new Memory(10);
 
     public static void ConvertToInstruction() throws IOException {
         InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
@@ -193,6 +193,15 @@ public class Simulator {
 
     }
 
+        private static boolean checkEmpty(ReservationStation[] reservationStation) {
+        for (int i = 0; i < reservationStation.length; i++) {
+            if (reservationStation[i].busy == true)
+                return false ;
+        }
+
+        return true;
+
+    }
     public static void execute() {
         // check if there is an instruction in any of the reservation stations
         // if there is an instruction, execute it
@@ -421,6 +430,7 @@ public class Simulator {
 
         String highestPriorityStation = findHighestPriorityKey(priority);
         ReservationStation station = findReservationStation(highestPriorityStation);
+        station.instruction.status=Status.WRITING_BACK;
         System.out.println("Writing this station: " + station);
         write(station);
 
@@ -537,10 +547,10 @@ public class Simulator {
             cycle++;
             System.out.println("______________________");
             boolean isDone = false;
-            if (checkEmptyReservationStation(addReservationStation) == -1
-                    && checkEmptyReservationStation(multReservationStation) == -1 &&
-                    checkEmptyReservationStation(loadReservationStation) == -1
-                    && checkEmptyReservationStation(storeReservationStation) == -1) {
+            if (checkEmpty(addReservationStation)
+                    && checkEmpty(multReservationStation) &&
+                    checkEmpty(loadReservationStation) 
+                    && checkEmpty(storeReservationStation)) {
                 isDone = true;
             }
             if (isDone) {

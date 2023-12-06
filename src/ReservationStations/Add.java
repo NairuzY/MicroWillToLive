@@ -30,7 +30,7 @@ public class Add extends ReservationStation {
     }
 
     public void setValues(Instruction instruction) {
-        instruction.status = Status.ISSUED;
+     
         int source1;
         int source2;
         if (instruction instanceof FpAdd || instruction instanceof FpSub) {
@@ -86,6 +86,7 @@ public class Add extends ReservationStation {
 
         }
         this.instruction = instruction.clone();
+        this.instruction.status = Status.ISSUED;
         this.busy = true;
 
     }
