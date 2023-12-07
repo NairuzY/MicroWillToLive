@@ -40,9 +40,9 @@ public class Simulator {
     static Multiply[] multReservationStation;
     static Load[] loadReservationStation;
     static Store[] storeReservationStation;
-
     static RegisterFile floatRegisterFile = new RegisterFile();
     static Memory memory = new Memory(10);
+    static ArrayList<Instruction> instructionQueue = new ArrayList<>();
 
     public static void ConvertToInstruction() throws IOException {
         InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
@@ -136,6 +136,7 @@ public class Simulator {
                         .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
 
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+                instructionQueue.add(addReservationStation[index].instruction);
             }
 
         } else if (type == InstructionType.INT_ADDI
@@ -145,12 +146,14 @@ public class Simulator {
             if (index != -1) {
                 addReservationStation[index].setValues(Program.get(pc));
                 addReservationStation[index].instruction.issuedCycle = cycle;
-                if( type == InstructionType.BRANCH)
-                pc++;
-                else{
-                RegisterFile.integerRegisterFile[Program
-                        .get(pc++).destinationRegister].tag = addReservationStation[index].tag;}
+                if (type == InstructionType.BRANCH)
+                    pc++;
+                else {
+                    RegisterFile.integerRegisterFile[Program
+                            .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
+                }
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+                instructionQueue.add(addReservationStation[index].instruction);
             }
         } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
 
@@ -161,16 +164,17 @@ public class Simulator {
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = multReservationStation[index].tag;
                 System.out.println("Issuing this instruction: " + multReservationStation[index].instruction);
+                instructionQueue.add(multReservationStation[index].instruction);
             }
         } else if (type == InstructionType.LOAD) {
             index = checkEmptyReservationStation(loadReservationStation);
             if (index != -1) {
-
                 loadReservationStation[index].setValues(Program.get(pc));
                 loadReservationStation[index].instruction.issuedCycle = cycle;
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = loadReservationStation[index].tag;
                 System.out.println("Issuing this instruction: " + loadReservationStation[index].instruction);
+                instructionQueue.add(loadReservationStation[index].instruction);
             }
         } else if (type == InstructionType.STORE) {
             index = checkEmptyReservationStation(storeReservationStation);
@@ -178,9 +182,9 @@ public class Simulator {
                 storeReservationStation[index].setValues(Program.get(pc++));
                 storeReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + storeReservationStation[index].instruction);
+                instructionQueue.add(storeReservationStation[index].instruction);
             }
         }
-
     }
 
     private static int checkEmptyReservationStation(ReservationStation[] reservationStation) {
@@ -193,15 +197,16 @@ public class Simulator {
 
     }
 
-        private static boolean checkEmpty(ReservationStation[] reservationStation) {
+    private static boolean checkEmpty(ReservationStation[] reservationStation) {
         for (int i = 0; i < reservationStation.length; i++) {
             if (reservationStation[i].busy == true)
-                return false ;
+                return false;
         }
 
         return true;
 
     }
+
     public static void execute() {
         // check if there is an instruction in any of the reservation stations
         // if there is an instruction, execute it
@@ -430,13 +435,14 @@ public class Simulator {
 
         String highestPriorityStation = findHighestPriorityKey(priority);
         ReservationStation station = findReservationStation(highestPriorityStation);
-        station.instruction.status=Status.WRITING_BACK;
+        station.instruction.status = Status.WRITING_BACK;
         System.out.println("Writing this station: " + station);
         write(station);
 
     }
 
     public static void write(ReservationStation station) {
+        station.instruction.writtenCycle = cycle;
         for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
             if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
                 RegisterFile.floatRegisterFile[i].tag = null;
@@ -517,8 +523,7 @@ public class Simulator {
         System.out.println("Initial Register file: ");
         RegisterFile.print();
         System.out.println("______________________");
-        System.out.println("Cycle 0 is used to fetch the first instruction");
-
+    
         while (true) {
             System.out.println('\n' + "Cycle: " + cycle);
             issue();
@@ -549,13 +554,18 @@ public class Simulator {
             boolean isDone = false;
             if (checkEmpty(addReservationStation)
                     && checkEmpty(multReservationStation) &&
-                    checkEmpty(loadReservationStation) 
+                    checkEmpty(loadReservationStation)
                     && checkEmpty(storeReservationStation)) {
                 isDone = true;
             }
-            if (isDone&&pc>=Program.size()) {
+            if (isDone && pc >= Program.size()) {
                 break;
             }
+        }
+
+        System.out.println("Queue:");
+        for (int i = 0; i < instructionQueue.size(); i++) {
+            System.out.println(instructionQueue.get(i));
         }
     }
 

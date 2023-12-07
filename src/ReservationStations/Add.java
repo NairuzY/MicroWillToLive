@@ -6,7 +6,6 @@ import Instructions.DADD;
 import Instructions.FpAdd;
 import Instructions.FpSub;
 import Instructions.Instruction;
-import Instructions.InstructionType;
 import Instructions.SubI;
 import Storage.RegisterFile;
 import utils.Status;
