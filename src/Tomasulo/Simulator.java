@@ -43,6 +43,7 @@ public class Simulator {
     static RegisterFile floatRegisterFile = new RegisterFile();
     static Memory memory = new Memory(10);
     static ArrayList<Instruction> instructionQueue = new ArrayList<>();
+    static boolean issue = true;
 
     public static void ConvertToInstruction() throws IOException {
         InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
@@ -124,7 +125,7 @@ public class Simulator {
 
     public static void issue() {
         int index = -1;
-        if (pc >= Program.size())
+        if (pc >= Program.size() || !issue)
             return;
         InstructionType type = Program.get(pc).type;
         if (type == InstructionType.FP_ADD || type == InstructionType.FP_SUB) {
@@ -155,6 +156,8 @@ public class Simulator {
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
                 instructionQueue.add(addReservationStation[index].instruction);
             }
+            if( type == InstructionType.BRANCH)
+                issue = false;
         } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
 
             index = checkEmptyReservationStation(multReservationStation);
@@ -334,9 +337,7 @@ public class Simulator {
     private static String findHighestPriorityKey(HashMap<String, Integer> priority) {
         int maxPriority = Integer.MIN_VALUE;
         String highestPriorityKey = null;
-
-        // Iterate through the entries of the HashMap to find the key with the highest
-        // value
+        // Iterate through the entries of the HashMap to find the key with the highest value
         for (Map.Entry<String, Integer> entry : priority.entrySet()) {
             if (entry.getValue() > maxPriority) {
                 maxPriority = entry.getValue();
@@ -365,9 +366,13 @@ public class Simulator {
         HashMap<String, Integer> priority = new HashMap<String, Integer>();
         for (int i = 0; i < addReservationStations; i++) {
             if (addReservationStation[i].busy) {
-
-                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
-                    priority.put(addReservationStation[i].tag, 0);
+                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT){
+                    if(addReservationStation[i].instruction.type == InstructionType.BRANCH){
+                        priority.put(addReservationStation[i].tag, Integer.MAX_VALUE);
+                    }
+                    else 
+                        priority.put(addReservationStation[i].tag, 0);
+                }
             }
         }
         for (int i = 0; i < multReservationStations; i++) {
@@ -443,6 +448,10 @@ public class Simulator {
 
     public static void write(ReservationStation station) {
         station.instruction.writtenCycle = cycle;
+        if(station.instruction.type == InstructionType.BRANCH){
+            pc *= (int)station.result.floatValue();
+            issue = true;
+        }
         for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
             if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
                 RegisterFile.floatRegisterFile[i].tag = null;
