@@ -8,6 +8,7 @@ public abstract class Instruction {
     public int destinationRegister;
     public int issuedCycle = 0;
     public int executedCycle = 0;
+    public int finishedECycle = 0;
     public int writtenCycle = 0;
     
     public Instruction(InstructionType type, int destinationRegister) {
@@ -21,10 +22,11 @@ public abstract class Instruction {
         return "Instruction{" +
                 "type=" + type +
                 ", status=" + status +
-                ", destinationRegister=" + destinationRegister +
-                ", issuedCycle=" + issuedCycle +
-                ", executedCycle=" + executedCycle +
-                ", writtenCycle=" + writtenCycle +
+                ", destination register=" + destinationRegister +
+                ", issued cycle=" + issuedCycle +
+                ", started execution cycle=" + executedCycle +
+                ", finished execution cycle=" + finishedECycle +
+                ", written cycle=" + writtenCycle +
                 '}';
     }
     
