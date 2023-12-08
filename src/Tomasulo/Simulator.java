@@ -156,7 +156,7 @@ public class Simulator {
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
                 instructionQueue.add(addReservationStation[index].instruction);
             }
-            if( type == InstructionType.BRANCH)
+            if (type == InstructionType.BRANCH)
                 issue = false;
         } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
 
@@ -195,9 +195,7 @@ public class Simulator {
             if (reservationStation[i].busy == false)
                 return i;
         }
-
         return -1;
-
     }
 
     private static boolean checkEmpty(ReservationStation[] reservationStation) {
@@ -205,9 +203,7 @@ public class Simulator {
             if (reservationStation[i].busy == true)
                 return false;
         }
-
         return true;
-
     }
 
     public static void execute() {
@@ -309,7 +305,6 @@ public class Simulator {
             if (storeReservationStation[i].busy) {
                 if (storeReservationStation[i].Qj == null) {
                     if (storeReservationStation[i].instruction.status == Status.EXECUTING) {
-
                         storeReservationStation[i].remainingExecutionCycles--;
                         if (storeReservationStation[i].remainingExecutionCycles == 0) {
                             storeReservationStation[i].execute();
@@ -337,7 +332,8 @@ public class Simulator {
     private static String findHighestPriorityKey(HashMap<String, Integer> priority) {
         int maxPriority = Integer.MIN_VALUE;
         String highestPriorityKey = null;
-        // Iterate through the entries of the HashMap to find the key with the highest value
+        // Iterate through the entries of the HashMap to find the key with the highest
+        // value
         for (Map.Entry<String, Integer> entry : priority.entrySet()) {
             if (entry.getValue() > maxPriority) {
                 maxPriority = entry.getValue();
@@ -366,11 +362,10 @@ public class Simulator {
         HashMap<String, Integer> priority = new HashMap<String, Integer>();
         for (int i = 0; i < addReservationStations; i++) {
             if (addReservationStation[i].busy) {
-                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT){
-                    if(addReservationStation[i].instruction.type == InstructionType.BRANCH){
+                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT) {
+                    if (addReservationStation[i].instruction.type == InstructionType.BRANCH) {
                         priority.put(addReservationStation[i].tag, Integer.MAX_VALUE);
-                    }
-                    else 
+                    } else
                         priority.put(addReservationStation[i].tag, 0);
                 }
             }
@@ -448,46 +443,47 @@ public class Simulator {
 
     public static void write(ReservationStation station) {
         station.instruction.writtenCycle = cycle;
-        if(station.instruction.type == InstructionType.BRANCH){
-            pc *= (int)station.result.floatValue();
+        if (station.instruction.type == InstructionType.BRANCH) {
+            pc *= (int) station.result.floatValue();
             issue = true;
-        }
-        for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
-            if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
-                RegisterFile.floatRegisterFile[i].tag = null;
-                RegisterFile.floatRegisterFile[i].value = station.result;
+        } else {
+            for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
+                if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
+                    RegisterFile.floatRegisterFile[i].tag = null;
+                    RegisterFile.floatRegisterFile[i].value = station.result;
+                }
             }
-        }
-        for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
-            if (RegisterFile.integerRegisterFile[i].tag == station.tag) {
-                RegisterFile.integerRegisterFile[i].tag = null;
-                RegisterFile.integerRegisterFile[i].value = station.result;
+            for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
+                if (RegisterFile.integerRegisterFile[i].tag == station.tag) {
+                    RegisterFile.integerRegisterFile[i].tag = null;
+                    RegisterFile.integerRegisterFile[i].value = station.result;
+                }
             }
-        }
-        for (int i = 0; i < addReservationStations; i++) {
-            if (addReservationStation[i].getQj() == station.tag) {
-                addReservationStation[i].setQj(null);
-                addReservationStation[i].setVj(station.result);
+            for (int i = 0; i < addReservationStations; i++) {
+                if (addReservationStation[i].getQj() == station.tag) {
+                    addReservationStation[i].setQj(null);
+                    addReservationStation[i].setVj(station.result);
+                }
+                if (addReservationStation[i].getQk() == station.tag) {
+                    addReservationStation[i].setQk(null);
+                    addReservationStation[i].setVk(station.result);
+                }
             }
-            if (addReservationStation[i].getQk() == station.tag) {
-                addReservationStation[i].setQk(null);
-                addReservationStation[i].setVk(station.result);
+            for (int i = 0; i < multReservationStations; i++) {
+                if (multReservationStation[i].Qj == station.tag) {
+                    multReservationStation[i].Qj = null;
+                    multReservationStation[i].Vj = station.result;
+                }
+                if (multReservationStation[i].Qk == station.tag) {
+                    multReservationStation[i].Qk = null;
+                    multReservationStation[i].Vk = station.result;
+                }
             }
-        }
-        for (int i = 0; i < multReservationStations; i++) {
-            if (multReservationStation[i].Qj == station.tag) {
-                multReservationStation[i].Qj = null;
-                multReservationStation[i].Vj = station.result;
-            }
-            if (multReservationStation[i].Qk == station.tag) {
-                multReservationStation[i].Qk = null;
-                multReservationStation[i].Vk = station.result;
-            }
-        }
-        for (int i = 0; i < storeBuffer; i++) {
-            if (storeReservationStation[i].Qj == station.tag) {
-                storeReservationStation[i].Qj = null;
-                storeReservationStation[i].Vj = station.result;
+            for (int i = 0; i < storeBuffer; i++) {
+                if (storeReservationStation[i].Qj == station.tag) {
+                    storeReservationStation[i].Qj = null;
+                    storeReservationStation[i].Vj = station.result;
+                }
             }
         }
         station.instruction.status = Status.FINISHED;
@@ -532,7 +528,7 @@ public class Simulator {
         System.out.println("Initial Register file: ");
         RegisterFile.print();
         System.out.println("______________________");
-    
+
         while (true) {
             System.out.println('\n' + "Cycle: " + cycle);
             issue();
