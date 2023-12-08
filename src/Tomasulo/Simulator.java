@@ -486,6 +486,7 @@ public class Simulator {
                 }
             }
         }
+        station.instruction.finishedECycle = cycle;
         station.instruction.status = Status.FINISHED;
         station.empty();
     }
