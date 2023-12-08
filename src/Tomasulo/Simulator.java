@@ -40,9 +40,10 @@ public class Simulator {
     static Multiply[] multReservationStation;
     static Load[] loadReservationStation;
     static Store[] storeReservationStation;
-
     static RegisterFile floatRegisterFile = new RegisterFile();
     static Memory memory = new Memory(10);
+    static ArrayList<Instruction> instructionQueue = new ArrayList<>();
+    static boolean issue = true;
 
     public static void ConvertToInstruction() throws IOException {
         InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
@@ -124,7 +125,7 @@ public class Simulator {
 
     public static void issue() {
         int index = -1;
-        if (pc >= Program.size())
+        if (pc >= Program.size() || !issue)
             return;
         InstructionType type = Program.get(pc).type;
         if (type == InstructionType.FP_ADD || type == InstructionType.FP_SUB) {
@@ -136,6 +137,7 @@ public class Simulator {
                         .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
 
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+                instructionQueue.add(addReservationStation[index].instruction);
             }
 
         } else if (type == InstructionType.INT_ADDI
@@ -145,13 +147,17 @@ public class Simulator {
             if (index != -1) {
                 addReservationStation[index].setValues(Program.get(pc));
                 addReservationStation[index].instruction.issuedCycle = cycle;
-                if( type == InstructionType.BRANCH)
-                pc++;
-                else{
-                RegisterFile.integerRegisterFile[Program
-                        .get(pc++).destinationRegister].tag = addReservationStation[index].tag;}
+                if (type == InstructionType.BRANCH)
+                    pc++;
+                else {
+                    RegisterFile.integerRegisterFile[Program
+                            .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
+                }
                 System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+                instructionQueue.add(addReservationStation[index].instruction);
             }
+            if (type == InstructionType.BRANCH)
+                issue = false;
         } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
 
             index = checkEmptyReservationStation(multReservationStation);
@@ -161,16 +167,17 @@ public class Simulator {
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = multReservationStation[index].tag;
                 System.out.println("Issuing this instruction: " + multReservationStation[index].instruction);
+                instructionQueue.add(multReservationStation[index].instruction);
             }
         } else if (type == InstructionType.LOAD) {
             index = checkEmptyReservationStation(loadReservationStation);
             if (index != -1) {
-
                 loadReservationStation[index].setValues(Program.get(pc));
                 loadReservationStation[index].instruction.issuedCycle = cycle;
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = loadReservationStation[index].tag;
                 System.out.println("Issuing this instruction: " + loadReservationStation[index].instruction);
+                instructionQueue.add(loadReservationStation[index].instruction);
             }
         } else if (type == InstructionType.STORE) {
             index = checkEmptyReservationStation(storeReservationStation);
@@ -178,9 +185,9 @@ public class Simulator {
                 storeReservationStation[index].setValues(Program.get(pc++));
                 storeReservationStation[index].instruction.issuedCycle = cycle;
                 System.out.println("Issuing this instruction: " + storeReservationStation[index].instruction);
+                instructionQueue.add(storeReservationStation[index].instruction);
             }
         }
-
     }
 
     private static int checkEmptyReservationStation(ReservationStation[] reservationStation) {
@@ -188,20 +195,17 @@ public class Simulator {
             if (reservationStation[i].busy == false)
                 return i;
         }
-
         return -1;
-
     }
 
-        private static boolean checkEmpty(ReservationStation[] reservationStation) {
+    private static boolean checkEmpty(ReservationStation[] reservationStation) {
         for (int i = 0; i < reservationStation.length; i++) {
             if (reservationStation[i].busy == true)
-                return false ;
+                return false;
         }
-
         return true;
-
     }
+
     public static void execute() {
         // check if there is an instruction in any of the reservation stations
         // if there is an instruction, execute it
@@ -301,7 +305,6 @@ public class Simulator {
             if (storeReservationStation[i].busy) {
                 if (storeReservationStation[i].Qj == null) {
                     if (storeReservationStation[i].instruction.status == Status.EXECUTING) {
-
                         storeReservationStation[i].remainingExecutionCycles--;
                         if (storeReservationStation[i].remainingExecutionCycles == 0) {
                             storeReservationStation[i].execute();
@@ -329,7 +332,6 @@ public class Simulator {
     private static String findHighestPriorityKey(HashMap<String, Integer> priority) {
         int maxPriority = Integer.MIN_VALUE;
         String highestPriorityKey = null;
-
         // Iterate through the entries of the HashMap to find the key with the highest
         // value
         for (Map.Entry<String, Integer> entry : priority.entrySet()) {
@@ -360,9 +362,12 @@ public class Simulator {
         HashMap<String, Integer> priority = new HashMap<String, Integer>();
         for (int i = 0; i < addReservationStations; i++) {
             if (addReservationStation[i].busy) {
-
-                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
-                    priority.put(addReservationStation[i].tag, 0);
+                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT) {
+                    if (addReservationStation[i].instruction.type == InstructionType.BRANCH) {
+                        priority.put(addReservationStation[i].tag, Integer.MAX_VALUE);
+                    } else
+                        priority.put(addReservationStation[i].tag, 0);
+                }
             }
         }
         for (int i = 0; i < multReservationStations; i++) {
@@ -430,49 +435,55 @@ public class Simulator {
 
         String highestPriorityStation = findHighestPriorityKey(priority);
         ReservationStation station = findReservationStation(highestPriorityStation);
-        station.instruction.status=Status.WRITING_BACK;
+        station.instruction.status = Status.WRITING_BACK;
         System.out.println("Writing this station: " + station);
         write(station);
 
     }
 
     public static void write(ReservationStation station) {
-        for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
-            if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
-                RegisterFile.floatRegisterFile[i].tag = null;
-                RegisterFile.floatRegisterFile[i].value = station.result;
+        station.instruction.writtenCycle = cycle;
+        if (station.instruction.type == InstructionType.BRANCH) {
+            pc *= (int) station.result.floatValue();
+            issue = true;
+        } else {
+            for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
+                if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
+                    RegisterFile.floatRegisterFile[i].tag = null;
+                    RegisterFile.floatRegisterFile[i].value = station.result;
+                }
             }
-        }
-        for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
-            if (RegisterFile.integerRegisterFile[i].tag == station.tag) {
-                RegisterFile.integerRegisterFile[i].tag = null;
-                RegisterFile.integerRegisterFile[i].value = station.result;
+            for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
+                if (RegisterFile.integerRegisterFile[i].tag == station.tag) {
+                    RegisterFile.integerRegisterFile[i].tag = null;
+                    RegisterFile.integerRegisterFile[i].value = station.result;
+                }
             }
-        }
-        for (int i = 0; i < addReservationStations; i++) {
-            if (addReservationStation[i].getQj() == station.tag) {
-                addReservationStation[i].setQj(null);
-                addReservationStation[i].setVj(station.result);
+            for (int i = 0; i < addReservationStations; i++) {
+                if (addReservationStation[i].getQj() == station.tag) {
+                    addReservationStation[i].setQj(null);
+                    addReservationStation[i].setVj(station.result);
+                }
+                if (addReservationStation[i].getQk() == station.tag) {
+                    addReservationStation[i].setQk(null);
+                    addReservationStation[i].setVk(station.result);
+                }
             }
-            if (addReservationStation[i].getQk() == station.tag) {
-                addReservationStation[i].setQk(null);
-                addReservationStation[i].setVk(station.result);
+            for (int i = 0; i < multReservationStations; i++) {
+                if (multReservationStation[i].Qj == station.tag) {
+                    multReservationStation[i].Qj = null;
+                    multReservationStation[i].Vj = station.result;
+                }
+                if (multReservationStation[i].Qk == station.tag) {
+                    multReservationStation[i].Qk = null;
+                    multReservationStation[i].Vk = station.result;
+                }
             }
-        }
-        for (int i = 0; i < multReservationStations; i++) {
-            if (multReservationStation[i].Qj == station.tag) {
-                multReservationStation[i].Qj = null;
-                multReservationStation[i].Vj = station.result;
-            }
-            if (multReservationStation[i].Qk == station.tag) {
-                multReservationStation[i].Qk = null;
-                multReservationStation[i].Vk = station.result;
-            }
-        }
-        for (int i = 0; i < storeBuffer; i++) {
-            if (storeReservationStation[i].Qj == station.tag) {
-                storeReservationStation[i].Qj = null;
-                storeReservationStation[i].Vj = station.result;
+            for (int i = 0; i < storeBuffer; i++) {
+                if (storeReservationStation[i].Qj == station.tag) {
+                    storeReservationStation[i].Qj = null;
+                    storeReservationStation[i].Vj = station.result;
+                }
             }
         }
         station.instruction.status = Status.FINISHED;
@@ -517,7 +528,6 @@ public class Simulator {
         System.out.println("Initial Register file: ");
         RegisterFile.print();
         System.out.println("______________________");
-        System.out.println("Cycle 0 is used to fetch the first instruction");
 
         while (true) {
             System.out.println('\n' + "Cycle: " + cycle);
@@ -549,13 +559,18 @@ public class Simulator {
             boolean isDone = false;
             if (checkEmpty(addReservationStation)
                     && checkEmpty(multReservationStation) &&
-                    checkEmpty(loadReservationStation) 
+                    checkEmpty(loadReservationStation)
                     && checkEmpty(storeReservationStation)) {
                 isDone = true;
             }
-            if (isDone&&pc>=Program.size()) {
+            if (isDone && pc >= Program.size()) {
                 break;
             }
+        }
+
+        System.out.println("Queue:");
+        for (int i = 0; i < instructionQueue.size(); i++) {
+            System.out.println(instructionQueue.get(i));
         }
     }
 

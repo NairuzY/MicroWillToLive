@@ -8,6 +8,7 @@ public abstract class Instruction {
     public int destinationRegister;
     public int issuedCycle = 0;
     public int executedCycle = 0;
+    public int writtenCycle = 0;
     
     public Instruction(InstructionType type, int destinationRegister) {
         this.type = type;
@@ -23,6 +24,7 @@ public abstract class Instruction {
                 ", destinationRegister=" + destinationRegister +
                 ", issuedCycle=" + issuedCycle +
                 ", executedCycle=" + executedCycle +
+                ", writtenCycle=" + writtenCycle +
                 '}';
     }
     

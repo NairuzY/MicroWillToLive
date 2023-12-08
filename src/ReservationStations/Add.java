@@ -6,7 +6,6 @@ import Instructions.DADD;
 import Instructions.FpAdd;
 import Instructions.FpSub;
 import Instructions.Instruction;
-import Instructions.InstructionType;
 import Instructions.SubI;
 import Storage.RegisterFile;
 import utils.Status;
@@ -146,7 +145,7 @@ public class Add extends ReservationStation {
         else if(this.instruction instanceof DADD)
             result = ((DADD) this.instruction).execute(Vj, Vk);    
         else if(this.instruction instanceof Branch)
-           ((Branch) this.instruction).execute(Vj, Vk);      
+            result = ((Branch) this.instruction).execute(Vj, Vk);      
 
     }
 
