@@ -4,7 +4,7 @@ import Instructions.Instruction;
 import utils.Status;
 
 public class Load extends ReservationStation {
-    private Integer effectiveAddress;
+    public Integer effectiveAddress;
     
     public Load(String tag) {
         

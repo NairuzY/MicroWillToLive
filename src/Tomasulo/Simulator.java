@@ -36,7 +36,7 @@ public class Simulator {
     static Store[] storeReservationStation;
     static RegisterFile floatRegisterFile = new RegisterFile();
     static Memory memory = new Memory(10);
-    static ArrayList<Instruction> instructionQueue = new ArrayList<>();
+    public static ArrayList<Instruction> instructionQueue = new ArrayList<>();
     static boolean issue = true;
 
     public static ArrayList<State> states = new ArrayList<>();
