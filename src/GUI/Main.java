@@ -5,7 +5,9 @@ import Tomasulo.State;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
 import javafx.scene.Node;
+
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -25,6 +27,7 @@ public class Main extends Application {
     public static String instructions;
     static ArrayList<State> cycleStates;
     static int currCycle = 0;
+
 
     public static void main(String[] args) throws IOException {
         launch(args);
@@ -131,23 +134,28 @@ public class Main extends Application {
         TableView tableInputs = new TableView<>();
 
         // Create columns
+
         TableColumn<Pair, String> inputCol = new TableColumn<>("INPUT");
         inputCol.setCellValueFactory(new PropertyValueFactory<>("key"));
 
         TableColumn<Pair, String> value = new TableColumn<>("VALUE");
+
         value.setCellValueFactory(new PropertyValueFactory<>("value"));
         tableInputs.getColumns().add(inputCol);
         tableInputs.getColumns().add(value);
 
         TableView memory = new TableView();
+
         TableColumn<Pair, String> address = new TableColumn<>("ADDRESS");
         address.setCellValueFactory(new PropertyValueFactory<>("key"));
+      
         TableColumn<Pair, String> memValue = new TableColumn<>("VALUE");
         memValue.setCellValueFactory(new PropertyValueFactory<>("value"));
         memory.getColumns().addAll(address, memValue);
 
 
         TableView floatRegisterFile = new TableView();
+
 
         TableColumn<Pair, String> floatRegisterLabel = new TableColumn<>("REGISTER");
         floatRegisterLabel.setCellValueFactory(new PropertyValueFactory<>("key"));
@@ -156,6 +164,7 @@ public class Main extends Application {
         floatRegisterValue.setCellValueFactory(new PropertyValueFactory<>("value"));
 
         TableColumn<Pair, String> floatRegisterTag = new TableColumn<>("WAITING");
+
         floatRegisterTag.setCellValueFactory(new PropertyValueFactory<>("value2"));
         floatRegisterFile.getColumns().addAll(floatRegisterLabel, floatRegisterValue, floatRegisterTag);
 
@@ -168,11 +177,13 @@ public class Main extends Application {
         integerRegisterValue.setCellValueFactory(new PropertyValueFactory<>("value"));
 
         TableColumn<Pair, String> integerRegisterTag = new TableColumn<>("WAITING");
+
         integerRegisterTag.setCellValueFactory(new PropertyValueFactory<>("value2"));
         integerRegisterFile.getColumns().addAll(integerRegisterLabel, integerRegisterValue, integerRegisterTag);
 
         // Create a load buffer table
         TableView loadBuffer = new TableView();
+
         TableColumn<Pair, String> loadBufferLabel = new TableColumn("LABEL");
         loadBufferLabel.setCellValueFactory(new PropertyValueFactory<>("key"));
 
@@ -180,16 +191,19 @@ public class Main extends Application {
         loadBufferAddress.setCellValueFactory(new PropertyValueFactory<>("value2"));
 
         TableColumn<Pair, String> loadBufferBusy = new TableColumn("BUSY");
+
         loadBufferBusy.setCellValueFactory(new PropertyValueFactory<>("value"));
         loadBuffer.getColumns().addAll(loadBufferLabel, loadBufferBusy, loadBufferAddress);
 
         // Create a load buffer table
         TableView storeBuffer = new TableView();
+
         TableColumn<Pair, String> storeBufferLabel = new TableColumn("LABEL");
         storeBufferLabel.setCellValueFactory(new PropertyValueFactory<>("key"));
 
         TableColumn<Pair, String> storeBufferAddress = new TableColumn("ADDRESS");
         storeBufferAddress.setCellValueFactory(new PropertyValueFactory<>("value2"));
+
 
         TableColumn<Pair, String> storeBufferBusy = new TableColumn("Busy");
         storeBufferBusy.setCellValueFactory(new PropertyValueFactory<>("value"));
@@ -204,7 +218,9 @@ public class Main extends Application {
 
         TableView addSubRS = new TableView();
 
+
         TableColumn<Pair, String> addSubRSLabel = new TableColumn("LABEL");
+
         addSubRSLabel.setCellValueFactory(new PropertyValueFactory<>("key"));
 
         TableColumn<Pair, String> addSubRSOp = new TableColumn("OP");
@@ -222,13 +238,16 @@ public class Main extends Application {
         TableColumn<Pair, String> addSubRSQk = new TableColumn("Qk");
         addSubRSQk.setCellValueFactory(new PropertyValueFactory<>("value5"));
 
+
         TableColumn<Pair, String> addSubRSBusy = new TableColumn("BUSY");
+
         addSubRSBusy.setCellValueFactory(new PropertyValueFactory<>("value6"));
 
         addSubRS.getColumns().addAll(addSubRSLabel, addSubRSOp, addSubRSVj, addSubRSVk, addSubRSQj, addSubRSQk, addSubRSBusy);
 
         //mul/div rs
         TableView mulDivRS = new TableView();
+
 
         TableColumn<Pair, String> RSLabel = new TableColumn("LABEL");
         RSLabel.setCellValueFactory(new PropertyValueFactory<>("key"));
@@ -253,8 +272,10 @@ public class Main extends Application {
 
         mulDivRS.getColumns().addAll(RSLabel, RSOp, RSVj, RSVk, RSQj, RSQk, RSBusy);
 
+
         // table for instructions
         TableView instructionsTable = new TableView();
+
 
         TableColumn<Pair, String> instructionsColumn = new TableColumn("INSTRUCTION");
         instructionsColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
@@ -407,6 +428,7 @@ public class Main extends Application {
 
 
 
+
         /* button */
         simulateButton.setOnAction(e -> {
 
@@ -421,6 +443,7 @@ public class Main extends Application {
                 State curState = cycleStates.get(currCycle);
 
                 for (int i = 0; i < curState.memoryValues.length; i++) {
+
                     memory.getItems().add(new Pair("MEM" + (i+1), curState.memoryValues[i] + ""));
                 }
 
@@ -452,6 +475,7 @@ public class Main extends Application {
                 String[] seperatedIns = instructions.split("\n");
                 for (int i = 0; i < curState.program.size(); i++) {
                     instructionsTable.getItems().add(new Pair(seperatedIns[i], curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
+
                 }
 
             } catch (Exception ex) {
@@ -460,6 +484,7 @@ public class Main extends Application {
             primaryStage.setScene(scene2);
 
         });
+
 
 
         TitledPane tableInputsPane = createTitledPane("Table Inputs", tableInputs);
@@ -490,9 +515,11 @@ public class Main extends Application {
             instructionsTable.getItems().clear();
             currCycle = 0;
         });
+
         // latencies
         tableInputs.setMaxWidth(200);
         tableInputs.setMaxHeight(330);
+
 
         memory.setMaxWidth(200);
         memory.setMaxHeight(330);
@@ -527,6 +554,7 @@ public class Main extends Application {
         p3.setSpacing(20);
         HBox p4 = new HBox();
         p4.getChildren().addAll(memoryPane, loadBufferPane, storeBufferPane, addSubRSPane, mulDivRSPane, prevCycle, nextCycle);
+
         p4.setSpacing(20);
 
         p2.getChildren().addAll(p3, p4);
@@ -535,7 +563,9 @@ public class Main extends Application {
     }
 
     private Label cycleLabel() {
+
         Label cycleLabel = new Label("CYCLE:  " + currCycle);
+
         cycleLabel.setFont(Font.font("Arial", 25));
         cycleLabel.setBackground(new Background(
                 new BackgroundFill(Color.BEIGE, null, null)));
@@ -551,5 +581,6 @@ public class Main extends Application {
         titledPane.setCollapsible(false); // Optional: Set to true if you want collapsible panes
         return titledPane;
     }
+
 
 }

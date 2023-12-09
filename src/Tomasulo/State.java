@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 
 
+
 // This class saves the state at every cycle, so we can have a history to show on the front-end.
 public class State {
      public Add[] addReservationStation;
@@ -67,7 +68,9 @@ public class State {
             }
 
             this.program = new ArrayList<>();
+
             for (Instruction instruction : Simulator.instructionQueue) {
+
                 this.program.add(instruction.clone());
             }
 

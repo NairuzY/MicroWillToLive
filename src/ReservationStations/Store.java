@@ -13,12 +13,14 @@ public class Store extends ReservationStation {
     public Store(String tag) {
         super(tag);
         this.address = null;
+        this.Vj = null;
+        this.Qj = null;
     }
     
     public void setValues(Instruction instruction) {
         int source;
         
-        source = ((Instructions.Store) instruction).destinationRegister;
+        source = ((Instructions.Store) instruction).sourceRegister1;
         
         if (RegisterFile.floatRegisterFile[source].tag == null)
             this.Vj = RegisterFile.floatRegisterFile[source].value;
@@ -35,7 +37,7 @@ public class Store extends ReservationStation {
     
     @Override
     public void execute() {
-        ((Instructions.Store) this.instruction).execute();
+        ((Instructions.Store) this.instruction).execute(Vj);
     }
     
     public void empty() {
@@ -54,6 +56,8 @@ public class Store extends ReservationStation {
                 "tag='" + tag + '\'' +
                 ", busy=" + busy +
                 ", A=" + address +
+                ", Vj=" + Vj +
+                ", Qj='" + Qj + '\'' +
                 '}');
     }
 
