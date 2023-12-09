@@ -5,14 +5,15 @@ import Storage.RegisterFile;
 
 public class Store extends Instruction {
     public int effectiveAddress;
-
+    public int sourceRegister1;
     public Store(int sourceRegister, int effectiveAddress) {
-        super(InstructionType.STORE, sourceRegister);
+        super(InstructionType.STORE, -1);
         this.effectiveAddress = effectiveAddress;
+        this.sourceRegister1=sourceRegister;
     }
 
-    public void execute() {
-        Memory.values[effectiveAddress] = RegisterFile.floatRegisterFile[destinationRegister].value;
+    public void execute(float Vj) {
+        Memory.values[effectiveAddress] = Vj;
     }
 
     public Instruction clone() {
