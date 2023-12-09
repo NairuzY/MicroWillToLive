@@ -10,7 +10,7 @@ import Storage.RegisterFile;
 
 import java.util.ArrayList;
 
-import static Tomasulo.Simulator.Program;
+
 
 
 // This class saves the state at every cycle, so we can have a history to show on the front-end.
@@ -68,7 +68,9 @@ public class State {
             }
 
             this.program = new ArrayList<>();
-            for (Instruction instruction : Program) {
+
+            for (Instruction instruction : Simulator.instructionQueue) {
+
                 this.program.add(instruction.clone());
             }
 

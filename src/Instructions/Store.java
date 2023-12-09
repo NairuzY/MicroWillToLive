@@ -12,8 +12,10 @@ public class Store extends Instruction {
         this.sourceRegister1=sourceRegister;
     }
 
+
     public void execute(float Vj) {
         Memory.values[effectiveAddress] = Vj;
+
     }
 
     public Instruction clone() {
