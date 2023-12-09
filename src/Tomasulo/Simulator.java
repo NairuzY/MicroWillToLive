@@ -10,10 +10,7 @@ import Storage.RegisterFile;
 import utils.Status;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Simulator {
@@ -191,7 +188,7 @@ public class Simulator {
 
     private static int checkEmptyReservationStation(ReservationStation[] reservationStation) {
         for (int i = 0; i < reservationStation.length; i++) {
-            if (!reservationStation[i].busy)
+            if (reservationStation[i].busy == false)
                 return i;
         }
         return -1;
@@ -199,7 +196,7 @@ public class Simulator {
 
     private static boolean checkEmpty(ReservationStation[] reservationStation) {
         for (int i = 0; i < reservationStation.length; i++) {
-            if (reservationStation[i].busy)
+            if (reservationStation[i].busy == true)
                 return false;
         }
         return true;
@@ -395,7 +392,7 @@ public class Simulator {
             }
         }
         for (int i = 0; i < addReservationStations; i++) {
-            if (addReservationStation[i].busy) {
+            if (addReservationStation[i].busy == true) {
                 if (addReservationStation[i].getQj() != null) {
                     if (priority.containsKey(addReservationStation[i].getQj()))
                         priority.put(addReservationStation[i].getQj(),
@@ -409,7 +406,7 @@ public class Simulator {
             }
         }
         for (int i = 0; i < multReservationStations; i++) {
-            if (multReservationStation[i].busy) {
+            if (multReservationStation[i].busy == true) {
                 if (multReservationStation[i].Qj != null) {
                     if (priority.containsKey(multReservationStation[i].Qj))
                         priority.put(multReservationStation[i].Qj, priority.get(multReservationStation[i].Qj) + 1);
@@ -421,7 +418,7 @@ public class Simulator {
             }
         }
         for (int i = 0; i < storeBuffer; i++) {
-            if (storeReservationStation[i].busy) {
+            if (storeReservationStation[i].busy == true) {
                 if (storeReservationStation[i].Qj != null) {
                     if (priority.containsKey(storeReservationStation[i].Qj))
                         priority.put(storeReservationStation[i].Qj, priority.get(storeReservationStation[i].Qj) + 1);
@@ -444,39 +441,39 @@ public class Simulator {
             issue = true;
         } else {
             for (int i = 0; i < RegisterFile.floatRegisterFile.length; i++) {
-                if (RegisterFile.floatRegisterFile[i].tag == station.tag) {
+                if (Objects.equals(RegisterFile.floatRegisterFile[i].tag, station.tag)) {
                     RegisterFile.floatRegisterFile[i].tag = null;
                     RegisterFile.floatRegisterFile[i].value = station.result;
                 }
             }
             for (int i = 0; i < RegisterFile.integerRegisterFile.length; i++) {
-                if (RegisterFile.integerRegisterFile[i].tag == station.tag) {
+                if (Objects.equals(RegisterFile.integerRegisterFile[i].tag, station.tag)) {
                     RegisterFile.integerRegisterFile[i].tag = null;
                     RegisterFile.integerRegisterFile[i].value = station.result;
                 }
             }
             for (int i = 0; i < addReservationStations; i++) {
-                if (addReservationStation[i].getQj() == station.tag) {
+                if (Objects.equals(addReservationStation[i].getQj(), station.tag)) {
                     addReservationStation[i].setQj(null);
                     addReservationStation[i].setVj(station.result);
                 }
-                if (addReservationStation[i].getQk() == station.tag) {
+                if (Objects.equals(addReservationStation[i].getQk(), station.tag)) {
                     addReservationStation[i].setQk(null);
                     addReservationStation[i].setVk(station.result);
                 }
             }
             for (int i = 0; i < multReservationStations; i++) {
-                if (multReservationStation[i].Qj == station.tag) {
+                if (Objects.equals(multReservationStation[i].Qj, station.tag)) {
                     multReservationStation[i].Qj = null;
                     multReservationStation[i].Vj = station.result;
                 }
-                if (multReservationStation[i].Qk == station.tag) {
+                if (Objects.equals(multReservationStation[i].Qk, station.tag)) {
                     multReservationStation[i].Qk = null;
                     multReservationStation[i].Vk = station.result;
                 }
             }
             for (int i = 0; i < storeBuffer; i++) {
-                if (storeReservationStation[i].Qj == station.tag) {
+                if (Objects.equals(storeReservationStation[i].Qj, station.tag)) {
                     storeReservationStation[i].Qj = null;
                     storeReservationStation[i].Vj = station.result;
                 }
@@ -551,7 +548,6 @@ public class Simulator {
             System.out.println("Memory: ");
             Memory.print();
             cycle++;
-            System.out.println("______________________");
             states.add(new State(addReservationStation, multReservationStation, loadReservationStation, storeReservationStation));
 
             boolean isDone = false;
