@@ -15,6 +15,10 @@ public class AddI extends Instruction {
     }
 
     public Instruction clone() {
-        return new AddI(this.destinationRegister, this.sourceRegister1, this.imm);
+        AddI clone = new AddI(this.destinationRegister, this.sourceRegister1, this.imm);
+        clone.executedCycle = this.executedCycle;
+        clone.finishedECycle = this.finishedECycle;
+        clone.issuedCycle = this.issuedCycle;
+        return clone;
     }
 }

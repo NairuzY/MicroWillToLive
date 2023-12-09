@@ -18,6 +18,10 @@ public class Branch extends Instruction {
     }
 
     public Instruction clone() {
-        return new Branch(this.sourceRegister);
+        Branch clone = new Branch(this.sourceRegister);
+        clone.executedCycle = this.executedCycle;
+        clone.finishedECycle = this.finishedECycle;
+        clone.issuedCycle = this.issuedCycle;
+        return clone;
     }
 }

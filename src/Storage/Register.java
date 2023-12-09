@@ -21,5 +21,11 @@ public class Register {
     public void setRegisterTag(String tag) {
         this.tag = tag;
     }
-    
+
+    public Register clone(){
+        Register clone = new Register();
+        clone.value = this.value;
+        clone.tag = this.tag;
+        return clone;
+    }
 }

@@ -33,4 +33,7 @@ public abstract class ReservationStation {
                 ", remainingExecutionCycles=" + remainingExecutionCycles +
                 '}';
     }
+
+    //clone
+    abstract public ReservationStation clone();
 }

@@ -50,5 +50,17 @@ public class Load extends ReservationStation {
                 ", A=" + effectiveAddress +
                 '}');
     }
-    
+
+    //clone
+    @Override
+    public Load clone() {
+        Load clone = new Load(this.tag);
+        clone.busy = this.busy;
+        if (this.instruction != null)
+            clone.instruction = this.instruction.clone();
+        clone.result = this.result;
+        clone.remainingExecutionCycles = this.remainingExecutionCycles;
+        clone.effectiveAddress = this.effectiveAddress;
+        return clone;
+    }
 }
