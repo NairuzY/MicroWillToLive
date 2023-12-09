@@ -1,23 +1,20 @@
 package Tomasulo;
 
+import GUI.Main;
+import Instructions.*;
+import ReservationStations.Load;
+import ReservationStations.Store;
 import ReservationStations.*;
 import Storage.Memory;
 import Storage.RegisterFile;
 import utils.Status;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
-import Instructions.AddI;
-import Instructions.Branch;
-import Instructions.FpAdd;
-import Instructions.FpDiv;
-import Instructions.FpMul;
-import Instructions.FpSub;
-import Instructions.Instruction;
-import Instructions.InstructionType;
-import Instructions.SubI;
-import Instructions.DADD;
 
 public class Simulator {
 
@@ -44,6 +41,8 @@ public class Simulator {
     static Memory memory = new Memory(10);
     static ArrayList<Instruction> instructionQueue = new ArrayList<>();
     static boolean issue = true;
+
+    public static ArrayList<State> states = new ArrayList<>();
 
     public static void ConvertToInstruction() throws IOException {
         InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
@@ -192,7 +191,7 @@ public class Simulator {
 
     private static int checkEmptyReservationStation(ReservationStation[] reservationStation) {
         for (int i = 0; i < reservationStation.length; i++) {
-            if (reservationStation[i].busy == false)
+            if (!reservationStation[i].busy)
                 return i;
         }
         return -1;
@@ -200,7 +199,7 @@ public class Simulator {
 
     private static boolean checkEmpty(ReservationStation[] reservationStation) {
         for (int i = 0; i < reservationStation.length; i++) {
-            if (reservationStation[i].busy == true)
+            if (reservationStation[i].busy)
                 return false;
         }
         return true;
@@ -243,7 +242,7 @@ public class Simulator {
         for (int i = 0; i < multReservationStations; i++) {
             if (multReservationStation[i].busy) {
                 if (multReservationStation[i].Qj == null & multReservationStation[i].Qk == null) {
-                    
+
                     if (multReservationStation[i].instruction.status == Status.ISSUED
                             || multReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
                         if (multReservationStation[i].instruction.issuedCycle != cycle) {
@@ -273,7 +272,7 @@ public class Simulator {
         for (int i = 0; i < loadBuffer; i++) {
             if (loadReservationStation[i].busy) {
 
-                
+
                 if (loadReservationStation[i].instruction.status == Status.ISSUED
                         || loadReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
                     if (loadReservationStation[i].instruction.issuedCycle != cycle) {
@@ -396,7 +395,7 @@ public class Simulator {
             }
         }
         for (int i = 0; i < addReservationStations; i++) {
-            if (addReservationStation[i].busy == true) {
+            if (addReservationStation[i].busy) {
                 if (addReservationStation[i].getQj() != null) {
                     if (priority.containsKey(addReservationStation[i].getQj()))
                         priority.put(addReservationStation[i].getQj(),
@@ -410,7 +409,7 @@ public class Simulator {
             }
         }
         for (int i = 0; i < multReservationStations; i++) {
-            if (multReservationStation[i].busy == true) {
+            if (multReservationStation[i].busy) {
                 if (multReservationStation[i].Qj != null) {
                     if (priority.containsKey(multReservationStation[i].Qj))
                         priority.put(multReservationStation[i].Qj, priority.get(multReservationStation[i].Qj) + 1);
@@ -422,7 +421,7 @@ public class Simulator {
             }
         }
         for (int i = 0; i < storeBuffer; i++) {
-            if (storeReservationStation[i].busy == true) {
+            if (storeReservationStation[i].busy) {
                 if (storeReservationStation[i].Qj != null) {
                     if (priority.containsKey(storeReservationStation[i].Qj))
                         priority.put(storeReservationStation[i].Qj, priority.get(storeReservationStation[i].Qj) + 1);
@@ -515,16 +514,16 @@ public class Simulator {
         sc.close();
     }
 
-    public static void main(String[] args) throws IOException {
 
-        start();
-
+    public static void run() throws IOException {
         ConvertToInstruction();
 
         System.out.println("______________________");
         System.out.println("Initial Register file: ");
         RegisterFile.print();
         System.out.println("______________________");
+        states.add(new State(addReservationStation, multReservationStation, loadReservationStation, storeReservationStation));
+
 
         while (true) {
             System.out.println('\n' + "Cycle: " + cycle);
@@ -552,7 +551,9 @@ public class Simulator {
             System.out.println("Memory: ");
             Memory.print();
             cycle++;
-        
+            System.out.println("______________________");
+            states.add(new State(addReservationStation, multReservationStation, loadReservationStation, storeReservationStation));
+
             boolean isDone = false;
             if (checkEmpty(addReservationStation)
                     && checkEmpty(multReservationStation) &&
@@ -563,6 +564,7 @@ public class Simulator {
             if (isDone && pc >= Program.size()) {
                 break;
             }
+
             System.out.println("______________________");
         }
 
@@ -570,6 +572,39 @@ public class Simulator {
         for (int i = 0; i < instructionQueue.size(); i++) {
             System.out.println(instructionQueue.get(i));
         }
+
+
     }
+
+    public static void main(String[] args) throws IOException {
+
+        start();
+
+        run();
+    }
+
+    public static void startFromGUI() throws IOException {
+
+        addLatency = Integer.parseInt(Main.textFields[0].getText());
+        subLatency = Integer.parseInt(Main.textFields[1].getText());
+        multLatency = Integer.parseInt(Main.textFields[2].getText());
+        divLatency = Integer.parseInt(Main.textFields[3].getText());
+        loadLatency = Integer.parseInt(Main.textFields[4].getText());
+        storeLatency = Integer.parseInt(Main.textFields[5].getText());
+        addReservationStations = Integer.parseInt(Main.textFields[6].getText());
+        multReservationStations = Integer.parseInt(Main.textFields[7].getText());
+        loadBuffer = Integer.parseInt(Main.textFields[8].getText());
+        storeBuffer = Integer.parseInt(Main.textFields[9].getText());
+        intializeReservationStations();
+
+        String ins = Main.instructions;
+
+        FileWriter myWriter = new FileWriter("src/Tomasulo/program.txt");
+        myWriter.write(ins);
+        myWriter.close();
+
+        run();
+    }
+
 
 }

@@ -92,4 +92,20 @@ public class Multiply extends ReservationStation {
                 ", Qk='" + Qk + '\'' +
                 '}');
     }
+
+    //clone
+    @Override
+    public Multiply clone() {
+        Multiply clone = new Multiply(this.tag);
+        clone.busy = this.busy;
+        if (this.instruction != null)
+            clone.instruction = this.instruction.clone();
+        clone.result = this.result;
+        clone.remainingExecutionCycles = this.remainingExecutionCycles;
+        clone.Vj = this.Vj;
+        clone.Vk = this.Vk;
+        clone.Qj = this.Qj;
+        clone.Qk = this.Qk;
+        return clone;
+    }
 }

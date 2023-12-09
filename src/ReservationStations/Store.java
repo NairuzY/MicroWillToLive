@@ -56,4 +56,19 @@ public class Store extends ReservationStation {
                 ", A=" + address +
                 '}');
     }
+
+    //clone
+    @Override
+    public Store clone() {
+        Store clone = new Store(this.tag);
+        clone.busy = this.busy;
+        if (this.instruction != null)
+            clone.instruction = this.instruction.clone();
+        clone.result = this.result;
+        clone.remainingExecutionCycles = this.remainingExecutionCycles;
+        clone.Vj = this.Vj;
+        clone.Qj = this.Qj;
+        clone.address = this.address;
+        return clone;
+    }
 }
