@@ -136,7 +136,7 @@ public class Simulator {
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
 
-                System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+                System.out.println("Issuing instruction: " + addReservationStation[index].instruction);
                 instructionQueue.add(addReservationStation[index].instruction);
             }
 
@@ -153,7 +153,7 @@ public class Simulator {
                     RegisterFile.integerRegisterFile[Program
                             .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
                 }
-                System.out.println("Issuing this instruction: " + addReservationStation[index].instruction);
+                System.out.println("Issuing instruction: " + addReservationStation[index].instruction);
                 instructionQueue.add(addReservationStation[index].instruction);
             }
             if (type == InstructionType.BRANCH)
@@ -166,7 +166,7 @@ public class Simulator {
                 multReservationStation[index].instruction.issuedCycle = cycle;
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = multReservationStation[index].tag;
-                System.out.println("Issuing this instruction: " + multReservationStation[index].instruction);
+                System.out.println("Issuing instruction: " + multReservationStation[index].instruction);
                 instructionQueue.add(multReservationStation[index].instruction);
             }
         } else if (type == InstructionType.LOAD) {
@@ -176,7 +176,7 @@ public class Simulator {
                 loadReservationStation[index].instruction.issuedCycle = cycle;
                 RegisterFile.floatRegisterFile[Program
                         .get(pc++).destinationRegister].tag = loadReservationStation[index].tag;
-                System.out.println("Issuing this instruction: " + loadReservationStation[index].instruction);
+                System.out.println("Issuing instruction: " + loadReservationStation[index].instruction);
                 instructionQueue.add(loadReservationStation[index].instruction);
             }
         } else if (type == InstructionType.STORE) {
@@ -184,7 +184,7 @@ public class Simulator {
             if (index != -1) {
                 storeReservationStation[index].setValues(Program.get(pc++));
                 storeReservationStation[index].instruction.issuedCycle = cycle;
-                System.out.println("Issuing this instruction: " + storeReservationStation[index].instruction);
+                System.out.println("Issuing instruction: " + storeReservationStation[index].instruction);
                 instructionQueue.add(storeReservationStation[index].instruction);
             }
         }
@@ -211,27 +211,14 @@ public class Simulator {
         // if there is an instruction, execute it
         // if there is no instruction, do nothing
         for (int i = 0; i < addReservationStations; i++) {
-            if (addReservationStation[i].busy) {// y2ma Q and Q null execute
-                // y2ma elstate is already executing nedecrment el remaining time y2ma
-                // its only issued/ waiting for register s3tha hnghir state l executing
-                // w nset time
-                // remaining time ==0 then ready to write back
-
+            if (addReservationStation[i].busy) {
                 if (addReservationStation[i].getQj() == null & addReservationStation[i].getQk() == null) {
-                    if (addReservationStation[i].instruction.status == Status.EXECUTING) {
-                        addReservationStation[i].remainingExecutionCycles--;
-                        if (addReservationStation[i].remainingExecutionCycles == 0) {
-                            addReservationStation[i].execute();
-                            addReservationStation[i].instruction.status = Status.WAITING_WRITE_RESULT;
-                        }
-                    }
-
                     if (addReservationStation[i].instruction.status == Status.ISSUED
                             || addReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
                         if (addReservationStation[i].instruction.issuedCycle != cycle) {
                             addReservationStation[i].instruction.executedCycle = cycle;
                             addReservationStation[i].instruction.status = Status.EXECUTING;
-                            System.out.println("Executing this instruction: " + addReservationStation[i].instruction);
+                            System.out.println("Executing instruction: " + addReservationStation[i].instruction);
                             if (addReservationStation[i].instruction instanceof FpAdd)
                                 addReservationStation[i].remainingExecutionCycles = addLatency;
                             else if (addReservationStation[i].instruction instanceof FpSub)
@@ -240,7 +227,14 @@ public class Simulator {
                                 addReservationStation[i].remainingExecutionCycles = integerLatency;
                         }
                     }
-
+                    if (addReservationStation[i].instruction.status == Status.EXECUTING) {
+                        addReservationStation[i].remainingExecutionCycles--;
+                        if (addReservationStation[i].remainingExecutionCycles == 0) {
+                            addReservationStation[i].execute();
+                            addReservationStation[i].instruction.status = Status.WAITING_WRITE_RESULT;
+                            addReservationStation[i].instruction.finishedECycle = cycle;
+                        }
+                    }
                 }
             }
         }
@@ -249,25 +243,26 @@ public class Simulator {
         for (int i = 0; i < multReservationStations; i++) {
             if (multReservationStation[i].busy) {
                 if (multReservationStation[i].Qj == null & multReservationStation[i].Qk == null) {
+                    
+                    if (multReservationStation[i].instruction.status == Status.ISSUED
+                            || multReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
+                        if (multReservationStation[i].instruction.issuedCycle != cycle) {
+                            multReservationStation[i].instruction.executedCycle = cycle;
+                            multReservationStation[i].instruction.status = Status.EXECUTING;
+                            System.out.println("Executing instruction: " + multReservationStation[i].instruction);
+                            if (multReservationStation[i].instruction instanceof FpMul)
+                                multReservationStation[i].remainingExecutionCycles = multLatency;
+                            else
+                                multReservationStation[i].remainingExecutionCycles = divLatency;
+                        }
+                    }
                     if (multReservationStation[i].instruction.status == Status.EXECUTING) {
 
                         multReservationStation[i].remainingExecutionCycles--;
                         if (multReservationStation[i].remainingExecutionCycles == 0) {
                             multReservationStation[i].execute();
                             multReservationStation[i].instruction.status = Status.WAITING_WRITE_RESULT;
-                        }
-                    }
-
-                    if (multReservationStation[i].instruction.status == Status.ISSUED
-                            || multReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
-                        if (multReservationStation[i].instruction.issuedCycle != cycle) {
-                            multReservationStation[i].instruction.executedCycle = cycle;
-                            multReservationStation[i].instruction.status = Status.EXECUTING;
-                            System.out.println("Executing this instruction: " + multReservationStation[i].instruction);
-                            if (multReservationStation[i].instruction instanceof FpMul)
-                                multReservationStation[i].remainingExecutionCycles = multLatency;
-                            else
-                                multReservationStation[i].remainingExecutionCycles = divLatency;
+                            multReservationStation[i].instruction.finishedECycle = cycle;
                         }
                     }
 
@@ -278,24 +273,26 @@ public class Simulator {
         for (int i = 0; i < loadBuffer; i++) {
             if (loadReservationStation[i].busy) {
 
+                
+                if (loadReservationStation[i].instruction.status == Status.ISSUED
+                        || loadReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
+                    if (loadReservationStation[i].instruction.issuedCycle != cycle) {
+                        loadReservationStation[i].instruction.executedCycle = cycle;
+                        loadReservationStation[i].instruction.status = Status.EXECUTING;
+                        System.out.println("Executing instruction: " + loadReservationStation[i].instruction);
+                        loadReservationStation[i].remainingExecutionCycles = loadLatency;
+                    }
+                }
                 if (loadReservationStation[i].instruction.status == Status.EXECUTING) {
 
                     loadReservationStation[i].remainingExecutionCycles--;
                     if (loadReservationStation[i].remainingExecutionCycles == 0) {
                         loadReservationStation[i].execute();
                         loadReservationStation[i].instruction.status = Status.WAITING_WRITE_RESULT;
+                        loadReservationStation[i].instruction.finishedECycle = cycle;
                     }
                 }
 
-                if (loadReservationStation[i].instruction.status == Status.ISSUED
-                        || loadReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
-                    if (loadReservationStation[i].instruction.issuedCycle != cycle) {
-                        loadReservationStation[i].instruction.executedCycle = cycle;
-                        loadReservationStation[i].instruction.status = Status.EXECUTING;
-                        System.out.println("Executing this instruction: " + loadReservationStation[i].instruction);
-                        loadReservationStation[i].remainingExecutionCycles = loadLatency;
-                    }
-                }
 
             }
         }
@@ -304,23 +301,23 @@ public class Simulator {
 
             if (storeReservationStation[i].busy) {
                 if (storeReservationStation[i].Qj == null) {
-                    if (storeReservationStation[i].instruction.status == Status.EXECUTING) {
-                        storeReservationStation[i].remainingExecutionCycles--;
-                        if (storeReservationStation[i].remainingExecutionCycles == 0) {
-                            storeReservationStation[i].execute();
-                            storeReservationStation[i].instruction.status = Status.FINISHED;
-                            storeReservationStation[i].empty();
-                            continue;
-                        }
-                    }
-                    System.out.println("store " + i + storeReservationStation[i].instruction);
                     if (storeReservationStation[i].instruction.status == Status.ISSUED
                             || storeReservationStation[i].instruction.status == Status.WAITING_REGISTER) {
                         if (storeReservationStation[i].instruction.issuedCycle != cycle) {
                             storeReservationStation[i].instruction.executedCycle = cycle;
                             storeReservationStation[i].instruction.status = Status.EXECUTING;
-                            System.out.println("Executing this instruction: " + storeReservationStation[i].instruction);
+                            System.out.println("Executing instruction: " + storeReservationStation[i].instruction);
                             storeReservationStation[i].remainingExecutionCycles = storeLatency;
+                        }
+                    }
+                    if (storeReservationStation[i].instruction.status == Status.EXECUTING) {
+                        storeReservationStation[i].remainingExecutionCycles--;
+                        if (storeReservationStation[i].remainingExecutionCycles == 0) {
+                            storeReservationStation[i].execute();
+                            storeReservationStation[i].instruction.status = Status.FINISHED;
+                            storeReservationStation[i].instruction.finishedECycle = cycle;
+                            storeReservationStation[i].empty();
+                            continue;
                         }
                     }
                 }
@@ -362,7 +359,7 @@ public class Simulator {
         HashMap<String, Integer> priority = new HashMap<String, Integer>();
         for (int i = 0; i < addReservationStations; i++) {
             if (addReservationStation[i].busy) {
-                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT) {
+                if (addReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT && addReservationStation[i].instruction.finishedECycle!=cycle) {
                     if (addReservationStation[i].instruction.type == InstructionType.BRANCH) {
                         priority.put(addReservationStation[i].tag, Integer.MAX_VALUE);
                     } else
@@ -372,13 +369,13 @@ public class Simulator {
         }
         for (int i = 0; i < multReservationStations; i++) {
             if (multReservationStation[i].busy) {
-                if (multReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
+                if (multReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT && multReservationStation[i].instruction.finishedECycle!=cycle)
                     priority.put(multReservationStation[i].tag, 0);
             }
         }
         for (int i = 0; i < loadBuffer; i++) {
             if (loadReservationStation[i].busy) {
-                if (loadReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT)
+                if (loadReservationStation[i].instruction.status == Status.WAITING_WRITE_RESULT && loadReservationStation[i].instruction.finishedECycle!=cycle)
                     priority.put(loadReservationStation[i].tag, 0);
             }
         }
@@ -436,7 +433,7 @@ public class Simulator {
         String highestPriorityStation = findHighestPriorityKey(priority);
         ReservationStation station = findReservationStation(highestPriorityStation);
         station.instruction.status = Status.WRITING_BACK;
-        System.out.println("Writing this station: " + station);
+        System.out.println("Writing station: " + station);
         write(station);
 
     }
@@ -486,7 +483,6 @@ public class Simulator {
                 }
             }
         }
-        station.instruction.finishedECycle = cycle;
         station.instruction.status = Status.FINISHED;
         station.empty();
     }
@@ -556,7 +552,7 @@ public class Simulator {
             System.out.println("Memory: ");
             Memory.print();
             cycle++;
-            System.out.println("______________________");
+        
             boolean isDone = false;
             if (checkEmpty(addReservationStation)
                     && checkEmpty(multReservationStation) &&
@@ -567,6 +563,7 @@ public class Simulator {
             if (isDone && pc >= Program.size()) {
                 break;
             }
+            System.out.println("______________________");
         }
 
         System.out.println("Queue:");
