@@ -143,17 +143,19 @@ public class Simulator {
             if (index != -1) {
                 addReservationStation[index].setValues(Program.get(pc));
                 addReservationStation[index].instruction.issuedCycle = cycle;
-                if (type == InstructionType.BRANCH)
+                if (type == InstructionType.BRANCH){
                     pc++;
+                    issue = false;
+                }
                 else {
                     RegisterFile.integerRegisterFile[Program
                             .get(pc++).destinationRegister].tag = addReservationStation[index].tag;
                 }
                 System.out.println("Issuing instruction: " + addReservationStation[index].instruction);
                 instructionQueue.add(addReservationStation[index].instruction);
+                
             }
-            if (type == InstructionType.BRANCH)
-                issue = false;
+            
         } else if (type == InstructionType.FP_MUL || type == InstructionType.FP_DIV) {
 
             index = checkEmptyReservationStation(multReservationStation);
@@ -429,12 +431,13 @@ public class Simulator {
         ReservationStation station = findReservationStation(highestPriorityStation);
         station.instruction.status = Status.WRITING_BACK;
         write(station);
-        System.out.println("Writing instruction: " + station.instruction);
+        
 
     }
 
     public static void write(ReservationStation station) {
         station.instruction.writtenCycle = cycle;
+        System.out.println("Writing instruction: " + station.instruction);
         if (station.instruction.type == InstructionType.BRANCH) {
             pc *= (int) station.result.floatValue();
             issue = true;
@@ -578,28 +581,7 @@ public class Simulator {
         run();
     }
 
-    public static void startFromGUI() throws IOException {
-
-        addLatency = Integer.parseInt(Main.textFields[0].getText());
-        subLatency = Integer.parseInt(Main.textFields[1].getText());
-        multLatency = Integer.parseInt(Main.textFields[2].getText());
-        divLatency = Integer.parseInt(Main.textFields[3].getText());
-        loadLatency = Integer.parseInt(Main.textFields[4].getText());
-        storeLatency = Integer.parseInt(Main.textFields[5].getText());
-        addReservationStations = Integer.parseInt(Main.textFields[6].getText());
-        multReservationStations = Integer.parseInt(Main.textFields[7].getText());
-        loadBuffer = Integer.parseInt(Main.textFields[8].getText());
-        storeBuffer = Integer.parseInt(Main.textFields[9].getText());
-        intializeReservationStations();
-
-        String ins = Main.instructions;
-
-        FileWriter myWriter = new FileWriter("src/Tomasulo/program.txt");
-        myWriter.write(ins);
-        myWriter.close();
-
-        run();
-    }
+   
 
 
 }
