@@ -1,13 +1,12 @@
 package GUI;
 
+import Instructions.Instruction;
 import Tomasulo.Simulator;
 import Tomasulo.State;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
 import javafx.scene.Node;
-
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -148,7 +147,7 @@ public class Main extends Application {
 
         TableColumn<Pair, String> address = new TableColumn<>("ADDRESS");
         address.setCellValueFactory(new PropertyValueFactory<>("key"));
-      
+
         TableColumn<Pair, String> memValue = new TableColumn<>("VALUE");
         memValue.setCellValueFactory(new PropertyValueFactory<>("value"));
         memory.getColumns().addAll(address, memValue);
@@ -225,6 +224,7 @@ public class Main extends Application {
 
         TableColumn<Pair, String> addSubRSOp = new TableColumn("OP");
         addSubRSOp.setCellValueFactory(new PropertyValueFactory<>("value"));
+        addSubRSOp.setMinWidth(100);
 
         TableColumn<Pair, String> addSubRSVj = new TableColumn("Vj");
         addSubRSVj.setCellValueFactory(new PropertyValueFactory<>("value2"));
@@ -254,6 +254,7 @@ public class Main extends Application {
 
         TableColumn<Pair, String> RSOp = new TableColumn("OP");
         RSOp.setCellValueFactory(new PropertyValueFactory<>("value"));
+        RSOp.setMinWidth(100);
 
         TableColumn<Pair, String> RSVj = new TableColumn("Vj");
         RSVj.setCellValueFactory(new PropertyValueFactory<>("value2"));
@@ -298,6 +299,16 @@ public class Main extends Application {
         instructionsStatus4.setMinWidth(100);
         instructionsTable.getColumns().addAll(instructionsColumn, instructionsStatus, instructionsStatus2, instructionsStatus3, instructionsStatus4);
 
+        TableView instructionEvents = new TableView();
+        TableColumn<Pair, String> instructionCol = new TableColumn("INSTRUCTION");
+        instructionCol.setCellValueFactory(new PropertyValueFactory<>("key"));
+        instructionCol.setMinWidth(150);
+
+        TableColumn<Pair, String> eventCol = new TableColumn("EVENT");
+        eventCol.setCellValueFactory(new PropertyValueFactory<>("value"));
+        eventCol.setMinWidth(100);
+        instructionEvents.getColumns().addAll(instructionCol, eventCol);
+
         int cycles;
 
         //create a button to go to the next cycle
@@ -314,8 +325,9 @@ public class Main extends Application {
         prevCycle.setDisable(true);
 
         prevCycle.setOnAction(e -> {
-            if (currCycle > 0) {
-                currCycle--;
+            currCycle--;
+            nextCycle.setDisable(false);
+            if (currCycle >= 0) {
                 if (currCycle == 0) {
                     //disable the button
                     prevCycle.setDisable(true);
@@ -331,46 +343,60 @@ public class Main extends Application {
                 mulDivRS.getItems().clear();
                 addSubRS.getItems().clear();
                 instructionsTable.getItems().clear();
+                instructionEvents.getItems().clear();
 
                 for (int i = 0; i < curState.memoryValues.length; i++) {
-                    memory.getItems().add(new Pair("MEM" + (i+1), curState.memoryValues[i] + ""));
+                    memory.getItems().add(new Pair("MEM" + (i + 1), curState.memoryValues[i] + ""));
                 }
 
                 for (int i = 0; i < curState.floatRegisterFile.length; i++) {
-                    floatRegisterFile.getItems().add(new Pair("F" + (i+1), curState.floatRegisterFile[i].value + "", curState.floatRegisterFile[i].tag));
+                    floatRegisterFile.getItems().add(new Pair("F" + (i + 1), curState.floatRegisterFile[i].value + "", curState.floatRegisterFile[i].tag));
                 }
 
                 for (int i = 0; i < curState.integerRegisterFile.length; i++) {
-                    integerRegisterFile.getItems().add(new Pair("R" + (i+1), (int) curState.integerRegisterFile[i].value + "", curState.integerRegisterFile[i].tag));
+                    integerRegisterFile.getItems().add(new Pair("R" + (i + 1), (int) curState.integerRegisterFile[i].value + "", curState.integerRegisterFile[i].tag));
                 }
 
                 for (int i = 0; i < curState.loadReservationStation.length; i++) {
-                    loadBuffer.getItems().add(new Pair("L" + (i+1), curState.loadReservationStation[i].busy + "", curState.loadReservationStation[i].effectiveAddress+""));
+                    loadBuffer.getItems().add(new Pair("L" + (i + 1), curState.loadReservationStation[i].busy + "", curState.loadReservationStation[i].effectiveAddress + ""));
                 }
 
                 for (int i = 0; i < curState.storeReservationStation.length; i++) {
-                    storeBuffer.getItems().add(new Pair("S" + (i+1), curState.storeReservationStation[i].busy + "", curState.storeReservationStation[i].address + "", curState.storeReservationStation[i].Vj + "", curState.storeReservationStation[i].Qj ));
+                    storeBuffer.getItems().add(new Pair("S" + (i + 1), curState.storeReservationStation[i].busy + "", curState.storeReservationStation[i].address + "", curState.storeReservationStation[i].Vj + "", curState.storeReservationStation[i].Qj));
                 }
                 for (int i = 0; i < curState.multReservationStation.length; i++) {
-                    mulDivRS.getItems().add(new Pair("M" + (i+1), curState.multReservationStation[i].instruction != null ? curState.multReservationStation[i].instruction.getClass().getSimpleName() : ""
+                    mulDivRS.getItems().add(new Pair("M" + (i + 1), curState.multReservationStation[i].instruction != null ? curState.multReservationStation[i].instruction.getClass().getSimpleName() : ""
                             , curState.multReservationStation[i].Vj + "", curState.multReservationStation[i].Vk + "", curState.multReservationStation[i].Qj, curState.multReservationStation[i].Qk, curState.multReservationStation[i].busy + ""));
                 }
                 for (int i = 0; i < curState.addReservationStation.length; i++) {
-                    addSubRS.getItems().add(new Pair("A" + (i+1), curState.addReservationStation[i].instruction != null ? curState.addReservationStation[i].instruction.getClass().getSimpleName() : ""
+                    addSubRS.getItems().add(new Pair("A" + (i + 1), curState.addReservationStation[i].instruction != null ? curState.addReservationStation[i].instruction.getClass().getSimpleName() : ""
                             , curState.addReservationStation[i].getVj() + "", curState.addReservationStation[i].getVk() + "", curState.addReservationStation[i].getQj(), curState.addReservationStation[i].getQk(), curState.addReservationStation[i].busy + ""));
                 }
 
 
-                String[] seperatedIns = instructions.split("\n");
                 for (int i = 0; i < curState.program.size(); i++) {
-                    instructionsTable.getItems().add(new Pair(seperatedIns[i], curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
+
+                    instructionsTable.getItems().add(new Pair(curState.program.get(i).rawInstructionString, curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
+                    if (curState.program.get(i).writtenCycle == currCycle)
+                        instructionEvents.getItems().add(new Pair(curState.program.get(i).rawInstructionString, "WRITTEN"));
                 }
+
+                for (Instruction i : curState.executingInstructions) {
+                    instructionEvents.getItems().add(new Pair(i.rawInstructionString, "EXECUTING"));
+                }
+
+                if (curState.issuedIns != null) {
+                    instructionEvents.getItems().add(new Pair(curState.issuedIns.rawInstructionString, "ISSUED"));
+                }
+
+
             }
         });
 
         nextCycle.setOnAction(e -> {
-                    if (currCycle < cycleStates.size() - 1) {
-                        currCycle++;
+                    currCycle++;
+                    prevCycle.setDisable(false);
+                    if (currCycle <= cycleStates.size() - 1) {
                         prevCycle.setDisable(false);
                         if (currCycle == cycleStates.size() - 1) {
                             //disable the button
@@ -387,40 +413,52 @@ public class Main extends Application {
                         mulDivRS.getItems().clear();
                         addSubRS.getItems().clear();
                         instructionsTable.getItems().clear();
+                        instructionEvents.getItems().clear();
 
                         for (int i = 0; i < curState.memoryValues.length; i++) {
-                            memory.getItems().add(new Pair("MEM" + (i+1), curState.memoryValues[i] + ""));
+                            memory.getItems().add(new Pair("MEM" + (i + 1), curState.memoryValues[i] + ""));
                         }
 
                         for (int i = 0; i < curState.floatRegisterFile.length; i++) {
-                            floatRegisterFile.getItems().add(new Pair("F" + (i+1), curState.floatRegisterFile[i].value + "", curState.floatRegisterFile[i].tag));
+                            floatRegisterFile.getItems().add(new Pair("F" + (i + 1), curState.floatRegisterFile[i].value + "", curState.floatRegisterFile[i].tag));
                         }
 
                         for (int i = 0; i < curState.integerRegisterFile.length; i++) {
-                            integerRegisterFile.getItems().add(new Pair("R" + (i+1), (int) curState.integerRegisterFile[i].value + "", curState.integerRegisterFile[i].tag));
+                            integerRegisterFile.getItems().add(new Pair("R" + (i + 1), (int) curState.integerRegisterFile[i].value + "", curState.integerRegisterFile[i].tag));
                         }
 
                         for (int i = 0; i < curState.loadReservationStation.length; i++) {
-                            loadBuffer.getItems().add(new Pair("L" + (i+1), curState.loadReservationStation[i].busy + "", curState.loadReservationStation[i].effectiveAddress+""));
+                            loadBuffer.getItems().add(new Pair("L" + (i + 1), curState.loadReservationStation[i].busy + "", curState.loadReservationStation[i].effectiveAddress + ""));
                         }
 
                         for (int i = 0; i < curState.storeReservationStation.length; i++) {
-                            storeBuffer.getItems().add(new Pair("S" + (i+1), curState.storeReservationStation[i].busy + "", curState.storeReservationStation[i].address+"", curState.storeReservationStation[i].Vj + "", curState.storeReservationStation[i].Qj));
+                            storeBuffer.getItems().add(new Pair("S" + (i + 1), curState.storeReservationStation[i].busy + "", curState.storeReservationStation[i].address + "", curState.storeReservationStation[i].Vj + "", curState.storeReservationStation[i].Qj));
                         }
                         for (int i = 0; i < curState.multReservationStation.length; i++) {
-                            mulDivRS.getItems().add(new Pair("M" + (i+1), curState.multReservationStation[i].instruction != null ? curState.multReservationStation[i].instruction.getClass().getSimpleName() : ""
+                            mulDivRS.getItems().add(new Pair("M" + (i + 1), curState.multReservationStation[i].instruction != null ? curState.multReservationStation[i].instruction.getClass().getSimpleName() : ""
                                     , curState.multReservationStation[i].Vj + "", curState.multReservationStation[i].Vk + "", curState.multReservationStation[i].Qj, curState.multReservationStation[i].Qk, curState.multReservationStation[i].busy + ""));
                         }
                         for (int i = 0; i < curState.addReservationStation.length; i++) {
-                            addSubRS.getItems().add(new Pair("A" + (i+1), curState.addReservationStation[i].instruction != null ? curState.addReservationStation[i].instruction.getClass().getSimpleName() : ""
+                            addSubRS.getItems().add(new Pair("A" + (i + 1), curState.addReservationStation[i].instruction != null ? curState.addReservationStation[i].instruction.getClass().getSimpleName() : ""
                                     , curState.addReservationStation[i].getVj() + "", curState.addReservationStation[i].getVk() + "", curState.addReservationStation[i].getQj(), curState.addReservationStation[i].getQk(), curState.addReservationStation[i].busy + ""));
                         }
 
 
-                        String[] seperatedIns = instructions.split("\n");
                         for (int i = 0; i < curState.program.size(); i++) {
-                            instructionsTable.getItems().add(new Pair(seperatedIns[i], curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
+
+                            instructionsTable.getItems().add(new Pair(curState.program.get(i).rawInstructionString, curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
+                            if (curState.program.get(i).writtenCycle == currCycle)
+                                instructionEvents.getItems().add(new Pair(curState.program.get(i).rawInstructionString, "WRITTEN"));
                         }
+
+                        for (Instruction i : curState.executingInstructions) {
+                            instructionEvents.getItems().add(new Pair(i.rawInstructionString, "EXECUTING"));
+                        }
+
+                        if (curState.issuedIns != null) {
+                            instructionEvents.getItems().add(new Pair(curState.issuedIns.rawInstructionString, "ISSUED"));
+                        }
+
                     }
                 }
         );
@@ -444,47 +482,54 @@ public class Main extends Application {
 
                 for (int i = 0; i < curState.memoryValues.length; i++) {
 
-                    memory.getItems().add(new Pair("MEM" + (i+1), curState.memoryValues[i] + ""));
+                    memory.getItems().add(new Pair("MEM" + (i + 1), curState.memoryValues[i] + ""));
                 }
 
                 for (int i = 0; i < curState.floatRegisterFile.length; i++) {
-                    floatRegisterFile.getItems().add(new Pair("F" + (i+1), curState.floatRegisterFile[i].value + "", curState.floatRegisterFile[i].tag));
+                    floatRegisterFile.getItems().add(new Pair("F" + (i + 1), curState.floatRegisterFile[i].value + "", curState.floatRegisterFile[i].tag));
                 }
 
                 for (int i = 0; i < curState.integerRegisterFile.length; i++) {
-                    integerRegisterFile.getItems().add(new Pair("R" + (i+1), (int) curState.integerRegisterFile[i].value + "", curState.integerRegisterFile[i].tag));
+                    integerRegisterFile.getItems().add(new Pair("R" + (i + 1), (int) curState.integerRegisterFile[i].value + "", curState.integerRegisterFile[i].tag));
                 }
 
                 for (int i = 0; i < curState.loadReservationStation.length; i++) {
-                    loadBuffer.getItems().add(new Pair("L" + (i+1), curState.loadReservationStation[i].busy + "", curState.loadReservationStation[i].effectiveAddress+""));
+                    loadBuffer.getItems().add(new Pair("L" + (i + 1), curState.loadReservationStation[i].busy + "", curState.loadReservationStation[i].effectiveAddress + ""));
                 }
 
                 for (int i = 0; i < curState.storeReservationStation.length; i++) {
-                    storeBuffer.getItems().add(new Pair("S" + (i+1), curState.storeReservationStation[i].busy + "", curState.storeReservationStation[i].address+"", curState.storeReservationStation[i].Vj + "", curState.storeReservationStation[i].Qj));
+                    storeBuffer.getItems().add(new Pair("S" + (i + 1), curState.storeReservationStation[i].busy + "", curState.storeReservationStation[i].address + "", curState.storeReservationStation[i].Vj + "", curState.storeReservationStation[i].Qj));
                 }
                 for (int i = 0; i < curState.multReservationStation.length; i++) {
-                    mulDivRS.getItems().add(new Pair("M" + (i+1), curState.multReservationStation[i].instruction != null ? curState.multReservationStation[i].instruction.getClass().getSimpleName() : ""
+                    mulDivRS.getItems().add(new Pair("M" + (i + 1), curState.multReservationStation[i].instruction != null ? curState.multReservationStation[i].instruction.getClass().getSimpleName() : ""
                             , curState.multReservationStation[i].Vj + "", curState.multReservationStation[i].Vk + "", curState.multReservationStation[i].Qj, curState.multReservationStation[i].Qk, curState.multReservationStation[i].busy + ""));
                 }
                 for (int i = 0; i < curState.addReservationStation.length; i++) {
-                    addSubRS.getItems().add(new Pair("A" + (i+1), curState.addReservationStation[i].instruction != null ? curState.addReservationStation[i].instruction.getClass().getSimpleName() : ""
+                    addSubRS.getItems().add(new Pair("A" + (i + 1), curState.addReservationStation[i].instruction != null ? curState.addReservationStation[i].instruction.getClass().getSimpleName() : ""
                             , curState.addReservationStation[i].getVj() + "", curState.addReservationStation[i].getVk() + "", curState.addReservationStation[i].getQj(), curState.addReservationStation[i].getQk(), curState.addReservationStation[i].busy + ""));
                 }
 
 
-                String[] seperatedIns = instructions.split("\n");
                 for (int i = 0; i < curState.program.size(); i++) {
-                    instructionsTable.getItems().add(new Pair(seperatedIns[i], curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
 
+                    instructionsTable.getItems().add(new Pair(curState.program.get(i).rawInstructionString, curState.program.get(i).issuedCycle + "", curState.program.get(i).executedCycle + "", curState.program.get(i).finishedECycle + "", curState.program.get(i).writtenCycle + ""));
+                    if (curState.program.get(i).writtenCycle == currCycle)
+                        instructionEvents.getItems().add(new Pair(curState.program.get(i).rawInstructionString, "WRITTEN"));
                 }
 
+                for (Instruction i : curState.executingInstructions) {
+                    instructionEvents.getItems().add(new Pair(i.rawInstructionString, "EXECUTING"));
+                }
+
+                if (curState.issuedIns != null) {
+                    instructionEvents.getItems().add(new Pair(curState.issuedIns.rawInstructionString, "ISSUED"));
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
             primaryStage.setScene(scene2);
 
         });
-
 
 
         TitledPane tableInputsPane = createTitledPane("Table Inputs", tableInputs);
@@ -496,6 +541,7 @@ public class Main extends Application {
         TitledPane addSubRSPane = createTitledPane("Add/Sub RS", addSubRS);
         TitledPane mulDivRSPane = createTitledPane("Mul/Div RS", mulDivRS);
         TitledPane instructionsTablePane = createTitledPane("Instructions Table", instructionsTable);
+        TitledPane instructionEventsPane = createTitledPane("Cycle Events", instructionEvents);
 
         //button to go back to first scene
         Button back = new Button("NEW");
@@ -513,6 +559,7 @@ public class Main extends Application {
             mulDivRS.getItems().clear();
             addSubRS.getItems().clear();
             instructionsTable.getItems().clear();
+            instructionEvents.getItems().clear();
             currCycle = 0;
         });
 
@@ -547,17 +594,26 @@ public class Main extends Application {
         instructionsTable.setMinWidth(550);
         instructionsTable.setMaxHeight(330);
 
+        instructionEvents.setMaxWidth(300);
+        instructionEvents.setMaxHeight(330);
+
         // create a label to show the current cycle
 
         HBox p3 = new HBox();
-        p3.getChildren().addAll(cycleLabel, tableInputsPane, instructionsTablePane, integerRegisterFilePane, floatRegisterFilePane);
+        p3.getChildren().addAll(tableInputsPane, instructionsTablePane, integerRegisterFilePane, floatRegisterFilePane);
         p3.setSpacing(20);
         HBox p4 = new HBox();
-        p4.getChildren().addAll(memoryPane, loadBufferPane, storeBufferPane, addSubRSPane, mulDivRSPane, prevCycle, nextCycle);
+        p4.getChildren().addAll(memoryPane, loadBufferPane, storeBufferPane, addSubRSPane, mulDivRSPane, instructionEventsPane);
+
+        HBox p5 = new HBox();
+        p5.getChildren().addAll(prevCycle, cycleLabel, nextCycle);
+        p5.setAlignment(Pos.CENTER);
+        p4.setAlignment(Pos.CENTER);
+        p3.setAlignment(Pos.CENTER);
 
         p4.setSpacing(20);
 
-        p2.getChildren().addAll(p3, p4);
+        p2.getChildren().addAll(p3, p4, p5);
 
         p2.setSpacing(20);
     }
@@ -578,7 +634,7 @@ public class Main extends Application {
         TitledPane titledPane = new TitledPane();
         titledPane.setText(title);
         titledPane.setContent(content);
-        titledPane.setCollapsible(false); // Optional: Set to true if you want collapsible panes
+        titledPane.setCollapsible(false);
         return titledPane;
     }
 

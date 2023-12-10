@@ -49,51 +49,51 @@ public class Simulator {
             String[] fields = instruction.split(" ");
             switch (fields[0]) {
                 case "ADD.D":
-                    Instruction add = new FpAdd(Integer.parseInt(fields[1].substring(1)),
+                    Instruction add = new FpAdd(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3].substring(1)));
                     Program.add(add);
                     break;
                 case "SUB.D":
-                    Instruction sub = new FpSub(Integer.parseInt(fields[1].substring(1)),
+                    Instruction sub = new FpSub(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3].substring(1)));
                     Program.add(sub);
                     break;
                 case "MUL.D":
-                    Instruction mul = new FpMul(Integer.parseInt(fields[1].substring(1)),
+                    Instruction mul = new FpMul(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3].substring(1)));
                     Program.add(mul);
                     break;
                 case "DIV.D":
-                    Instruction div = new FpDiv(Integer.parseInt(fields[1].substring(1)),
+                    Instruction div = new FpDiv(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3].substring(1)));
                     Program.add(div);
                     break;
                 case "ADDI":
-                    Instruction addI = new AddI(Integer.parseInt(fields[1].substring(1)),
+                    Instruction addI = new AddI(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3]));
                     Program.add(addI);
                     break;
                 case "SUBI":
-                    Instruction subI = new SubI(Integer.parseInt(fields[1].substring(1)),
+                    Instruction subI = new SubI(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3]));
                     Program.add(subI);
                     break;
                 case "DADD":
-                    Instruction dadd = new DADD(Integer.parseInt(fields[1].substring(1)),
+                    Instruction dadd = new DADD(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2].substring(1)), Integer.parseInt(fields[3].substring(1)));
                     Program.add(dadd);
                     break;
                 case "BNEZ":
-                    Instruction bnez = new Branch(Integer.parseInt(fields[1].substring(1)));
+                    Instruction bnez = new Branch(instruction,Integer.parseInt(fields[1].substring(1)));
                     Program.add(bnez);
                     break;
                 case "S.D":
-                    Instruction sd = new Instructions.Store(Integer.parseInt(fields[1].substring(1)),
+                    Instruction sd = new Instructions.Store(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2]));
                     Program.add(sd);
                     break;
                 case "L.D":
-                    Instruction ld = new Instructions.Load(Integer.parseInt(fields[1].substring(1)),
+                    Instruction ld = new Instructions.Load(instruction,Integer.parseInt(fields[1].substring(1)),
                             Integer.parseInt(fields[2]));
                     Program.add(ld);
                     break;
@@ -428,8 +428,8 @@ public class Simulator {
         String highestPriorityStation = findHighestPriorityKey(priority);
         ReservationStation station = findReservationStation(highestPriorityStation);
         station.instruction.status = Status.WRITING_BACK;
-        System.out.println("Writing instruction: " + station.instruction);
         write(station);
+        System.out.println("Writing instruction: " + station.instruction);
 
     }
 
@@ -546,8 +546,8 @@ public class Simulator {
             }
             System.out.println("Memory: ");
             Memory.print();
-            cycle++;
             states.add(new State(addReservationStation, multReservationStation, loadReservationStation, storeReservationStation));
+            cycle++;
 
             boolean isDone = false;
             if (checkEmpty(addReservationStation)
