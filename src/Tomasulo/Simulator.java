@@ -42,8 +42,14 @@ public class Simulator {
     public static ArrayList<State> states = new ArrayList<>();
 
     public static void ConvertToInstruction() throws IOException {
-        InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        BufferedReader br;
+        if(Main.instructions.equals("")) {
+            InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
+             br = new BufferedReader(new InputStreamReader(is));
+        }
+        else{
+            br = new BufferedReader(new StringReader(Main.instructions));
+        }
         String instruction;
         while ((instruction = br.readLine()) != null) {
             String[] fields = instruction.split(" ");
@@ -511,6 +517,24 @@ public class Simulator {
         intializeReservationStations();
         // initialize reservation states
         sc.close();
+    }
+
+    public static void startFromGUI() throws IOException {
+
+        addLatency = Integer.parseInt(Main.textFields[0].getText());
+        subLatency = Integer.parseInt(Main.textFields[1].getText());
+        multLatency = Integer.parseInt(Main.textFields[2].getText());
+        divLatency = Integer.parseInt(Main.textFields[3].getText());
+        loadLatency = Integer.parseInt(Main.textFields[4].getText());
+        storeLatency = Integer.parseInt(Main.textFields[5].getText());
+        addReservationStations = Integer.parseInt(Main.textFields[6].getText());
+        multReservationStations = Integer.parseInt(Main.textFields[7].getText());
+        loadBuffer = Integer.parseInt(Main.textFields[8].getText());
+        storeBuffer = Integer.parseInt(Main.textFields[9].getText());
+        intializeReservationStations();
+
+
+        run();
     }
 
 
