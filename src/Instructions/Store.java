@@ -6,8 +6,8 @@ import Storage.RegisterFile;
 public class Store extends Instruction {
     public int effectiveAddress;
     public int sourceRegister1;
-    public Store(int sourceRegister, int effectiveAddress) {
-        super(InstructionType.STORE, -1);
+    public Store(String rawInstructionString,int sourceRegister, int effectiveAddress) {
+        super(rawInstructionString, InstructionType.STORE, -1);
         this.effectiveAddress = effectiveAddress;
         this.sourceRegister1=sourceRegister;
     }
@@ -19,10 +19,11 @@ public class Store extends Instruction {
     }
 
     public Instruction clone() {
-        Store clone = new Store(this.destinationRegister, this.effectiveAddress);
+        Store clone = new Store(this.rawInstructionString,this.destinationRegister, this.effectiveAddress);
         clone.executedCycle = this.executedCycle;
         clone.finishedECycle = this.finishedECycle;
         clone.issuedCycle = this.issuedCycle;
+        clone.writtenCycle = this.writtenCycle;
         return clone;
     }
 }

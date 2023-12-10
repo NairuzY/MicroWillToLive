@@ -4,6 +4,8 @@ import utils.Status;
 
 public abstract class Instruction {
     public InstructionType type;
+
+    public String rawInstructionString;
     public Status status;
     public int destinationRegister;
     public int issuedCycle = 0;
@@ -11,7 +13,8 @@ public abstract class Instruction {
     public int finishedECycle = 0;
     public int writtenCycle = 0;
     
-    public Instruction(InstructionType type, int destinationRegister) {
+    public Instruction(String rawInstructionString, InstructionType type, int destinationRegister) {
+        this.rawInstructionString = rawInstructionString;
         this.type = type;
         this.destinationRegister = destinationRegister;
         status = Status.NOT_ISSUED;

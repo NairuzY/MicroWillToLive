@@ -25,6 +25,10 @@ public class State {
      // clone for floatRegister and intRegister
      public Register[] floatRegisterFile;
     public Register[] integerRegisterFile;
+    public ArrayList<Instruction>  executingInstructions = new ArrayList<>();
+
+    public Instruction issuedIns;
+
 
 
      public State(Add[] addReservationStation, Multiply[] multReservationStation, Load[] loadReservationStation, Store[] storeReservationStation
@@ -69,9 +73,23 @@ public class State {
 
             this.program = new ArrayList<>();
 
-            for (Instruction instruction : Simulator.instructionQueue) {
+            for (int i=0;i<Simulator.instructionQueue.size();i++) {
 
+                Instruction instruction = Simulator.instructionQueue.get(i);
                 this.program.add(instruction.clone());
+
+
+                if(instruction.status == utils.Status.EXECUTING || instruction.finishedECycle == Simulator.cycle)
+                {
+
+                    this.executingInstructions.add(instruction);
+                }
+
+                if(instruction.issuedCycle == Simulator.cycle)
+                {
+                    this.issuedIns = instruction;
+                }
+
             }
 
 

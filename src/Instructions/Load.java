@@ -5,8 +5,8 @@ import Storage.Memory;
 public class Load extends Instruction {
     public int effectiveAddress;
 
-    public Load(int destinationRegister, int effectiveAddress) {
-        super(InstructionType.LOAD, destinationRegister);
+    public Load(String rawInstructionString, int destinationRegister, int effectiveAddress) {
+        super(rawInstructionString, InstructionType.LOAD, destinationRegister);
         this.effectiveAddress = effectiveAddress;
 
     }
@@ -17,10 +17,11 @@ public class Load extends Instruction {
     }
 
     public Instruction clone() {
-        Load clone = new Load(this.destinationRegister, this.effectiveAddress);
+        Load clone = new Load(this.rawInstructionString,this.destinationRegister, this.effectiveAddress);
         clone.executedCycle = this.executedCycle;
         clone.finishedECycle = this.finishedECycle;
         clone.issuedCycle = this.issuedCycle;
+        clone.writtenCycle = this.writtenCycle;
         return clone;
     }
 }
