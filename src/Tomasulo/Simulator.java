@@ -43,7 +43,7 @@ public class Simulator {
 
     public static void ConvertToInstruction() throws IOException {
         BufferedReader br;
-        if(Main.instructions.equals("")) {
+        if(Main.instructions == null) {
             InputStream is = Simulator.class.getResourceAsStream("/Tomasulo/program.txt");
              br = new BufferedReader(new InputStreamReader(is));
         }
