@@ -1,2 +1,2 @@
-# Microprocessors project
-Java simulator for the Tomasulo algorithm.
+# Tomasulo Algorithm Simulator - Microprocessors Course Project
+[embed]tomasulo.pdf[/embed]
